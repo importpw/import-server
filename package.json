@@ -1,0 +1,13 @@
+{
+  "name": "import.pw-server",
+  "version": "1.0.0",
+  "description": "Redirects to GitHub repo raw URLs for use with `import`",
+  "scripts": {
+    "start": "micro server.js"
+  },
+  "author": "Nathan Rajlich <n@n8.io>",
+  "license": "MIT",
+  "dependencies": {
+    "micro": "^9.3.2"
+  }
+}
