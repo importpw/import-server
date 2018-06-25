@@ -1,4 +1,8 @@
 {
   "type": "docker",
-  "public": true
+  "public": true,
+  "alias": "import.pw",
+  "features": {
+    "cloud": "v2"
+  }
 }
