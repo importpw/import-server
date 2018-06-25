@@ -4,12 +4,12 @@ const {
   IMPORT_REPO = 'import'
 } = process.env;
 
-const toURL = ({repo, org, ref}) => (
-  `https://github.com/${org}/${repo}/raw/${ref}/${repo}.sh`
+const toURL = ({repo, org, ref, file}) => (
+  `https://github.com/${org}/${repo}/raw/${ref}/${file}`
 );
 
 module.exports = async (req, res) => {
-  const {pathname} = parse(req.url, true);
+  let {pathname, query: {file}} = parse(req.url, true);
   const parts = pathname.substring(1).split('/');
   if (parts.length > 2) {
     res.statusCode = 400;
@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     ref = repo.substring(at + 1);
     repo = repo.substring(0, at);
   }
-  const url = toURL({repo, org, ref});
+  const url = toURL({repo, org, ref, file || `${repo}.sh`});
   res.statusCode = 302;
   res.setHeader('Location', url);
   res.end(`Redirecting to ${JSON.stringify(url)}\n`);
