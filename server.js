@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     ref = repo.substring(at + 1);
     repo = repo.substring(0, at);
   }
-  const url = toURL({repo, org, ref, file || `${repo}.sh`});
+  const url = toURL({repo, org, ref, file: file || `${repo}.sh`});
   res.statusCode = 302;
   res.setHeader('Location', url);
   res.end(`Redirecting to ${JSON.stringify(url)}\n`);
