@@ -1,4 +1,5 @@
 const {parse} = require('url');
+const fetch = require('node-fetch');
 const {
   IMPORT_ORG = 'importpw',
   IMPORT_REPO = 'import'
