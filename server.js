@@ -71,7 +71,8 @@ module.exports = async (req, res) => {
         'Content-Location': res2.url
       }
     };
-    cache.set(id, cached);
+    const maxAge = new Date(res2.headers.get('Expires')) - Date.now();
+    cache.set(id, cached, maxAge);
   }
 
   res.statusCode = cached.status;
