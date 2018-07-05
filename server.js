@@ -54,6 +54,11 @@ module.exports = async (req, res) => {
   if (!cached) {
     const url = toURL(params);
     const res2 = await fetch(url);
+    if (!res2.ok) {
+      res.statusCode = res2.status;
+      res.setHeader('Content-Type', 'text/plain');
+      return `${res2.status}\n`;
+    }
     const body = await toBuffer(res2.body, {
       limit: '1mb'
     });
