@@ -9,7 +9,7 @@ const {
 } = process.env;
 
 const toURL = ({repo, org, ref, file}) => (
-  `https://github.com/${org}/${repo}/raw/${ref}/${file}`
+  `https://raw.githubusercontent.com/${org}/${repo}/${ref}/${file}`
 );
 
 const cache = LRU({
@@ -55,9 +55,9 @@ module.exports = async (req, res) => {
     const url = toURL(params);
     const res2 = await fetch(url);
     if (!res2.ok) {
-      res.statusCode = res2.status;
-      res.setHeader('Content-Type', 'text/plain');
-      return `${res2.status}\n`;
+      res.statusCode = 302;
+      res.setHeader('Location', res2.url);
+      return `Redirecting to ${res2.url}\n`;
     }
     const body = await toBuffer(res2.body, {
       limit: '1mb'
