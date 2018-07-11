@@ -3,10 +3,7 @@ const {parse} = require('url');
 const LRU = require('lru-cache');
 const fetch = require('node-fetch');
 const toBuffer = require('raw-body');
-const {
-  IMPORT_ORG = 'importpw',
-  IMPORT_REPO = 'import'
-} = process.env;
+const {IMPORT_ORG = 'importpw', IMPORT_REPO = 'import'} = process.env;
 
 const toURL = ({repo, org, ref, file}) => (
   `https://raw.githubusercontent.com/${org}/${repo}/${ref}/${file}`
@@ -28,6 +25,15 @@ module.exports = async (req, res) => {
   let repo = IMPORT_REPO;
   let {pathname, query: {file}} = parse(req.url, true);
 
+  if (pathname === '/favicon.ico') {
+    // Redirect to the user/org's GitHub avatar for the favicon
+    // See: https://stackoverflow.com/a/36380674/376773
+    const favicon = `https://github.com/${org}.png`;
+    res.statusCode = 302;
+    res.setHeader('Location', favicon);
+    return `Redirecting to ${favicon}\n`;
+  }
+
   const at = pathname.lastIndexOf('@');
   if (at !== -1) {
     ref = pathname.substring(at + 1);
@@ -43,7 +49,6 @@ module.exports = async (req, res) => {
     if (parts[1]) repo = parts[1];
   } else {
     res.statusCode = 400;
-    res.setHeader('Content-Type', 'text/plain');
     return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
   }
   if (!file) file = `${repo}.sh`;
