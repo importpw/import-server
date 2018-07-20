@@ -19,6 +19,12 @@ const cache = LRU({
   }
 });
 
+function redirect (res, url) {
+  res.statusCode = 302;
+  res.setHeader('Location', url);
+  return `Redirecting to ${url}\n`;
+}
+
 module.exports = async (req, res) => {
   let ref = 'master';
   let org = IMPORT_ORG;
@@ -29,9 +35,7 @@ module.exports = async (req, res) => {
     // Redirect to the user/org's GitHub avatar for the favicon
     // See: https://stackoverflow.com/a/36380674/376773
     const favicon = `https://github.com/${org}.png`;
-    res.statusCode = 302;
-    res.setHeader('Location', favicon);
-    return `Redirecting to ${favicon}\n`;
+    return redirect(res, favicon);
   }
 
   const at = pathname.lastIndexOf('@');
@@ -49,6 +53,7 @@ module.exports = async (req, res) => {
     if (parts[1]) repo = parts[1];
   } else {
     res.statusCode = 400;
+    res.setHeader('Content-Type', 'text/plain');
     return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
   }
   if (!file) file = `${repo}.sh`;
@@ -60,9 +65,9 @@ module.exports = async (req, res) => {
     const url = toURL(params);
     const res2 = await fetch(url);
     if (!res2.ok) {
-      res.statusCode = 302;
-      res.setHeader('Location', res2.url);
-      return `Redirecting to ${res2.url}\n`;
+      // If the asset was 404, then it's possibly a private repo.
+      // Redirect to the URL that 404'd and let `curl --netrc` give it a go.
+      return redirect(res, res2.url);
     }
     const body = await toBuffer(res2.body, {
       limit: '1mb'
