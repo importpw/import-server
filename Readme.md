@@ -5,8 +5,7 @@ GitHub redirection and raw file caching server intended for use with `import`.
 ## Deploying to Now
 
 ```bash
-$ now \
-  -e IMPORT_ORG=$username_or_org \
-  -e IMPORT_REPO=$top_level_repo_name \
-  importpw/import.pw-server
+export IMPORT_ORG=importpw
+export IMPORT_REPO=import
+now -e IMPORT_ORG -e IMPORT_REPO importpw/import.pw-server
 ```
