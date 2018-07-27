@@ -1,7 +1,7 @@
 {
   "type": "docker",
   "public": true,
-  "alias": "import.pw",
+  "alias": "gh.import.pw",
   "features": {
     "cloud": "v2"
   }
