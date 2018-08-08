@@ -3,6 +3,9 @@ const {parse} = require('url');
 const LRU = require('lru-cache');
 const fetch = require('node-fetch');
 const toBuffer = require('raw-body');
+const {createElement} = require('react');
+const {default: MDX} = require('@mdx-js/runtime');
+const {renderToStaticMarkup, renderToStaticNodeStream} = require('react-dom/server');
 const {IMPORT_ORG = 'importpw', IMPORT_REPO = 'import'} = process.env;
 
 const toURL = ({repo, org, ref, file}) => (
@@ -38,6 +41,9 @@ module.exports = async (req, res) => {
     return redirect(res, favicon);
   }
 
+  // If the browser is requesting the URL, then render the Readme using MDX
+  const isHTML = /html/i.test(req.headers.accept);
+
   const at = pathname.lastIndexOf('@');
   if (at !== -1) {
     ref = pathname.substring(at + 1);
@@ -55,6 +61,10 @@ module.exports = async (req, res) => {
     res.statusCode = 400;
     res.setHeader('Content-Type', 'text/plain');
     return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
+  }
+  if (isHTML) {
+    // TODO: Support case-insensitive filename, and non-markdown
+    file = 'Readme.md';
   }
   if (!file) file = `${repo}.sh`;
   const params = {repo, org, ref, file};
@@ -85,9 +95,17 @@ module.exports = async (req, res) => {
     cache.set(id, cached, maxAge);
   }
 
-  res.statusCode = cached.status;
-  for (const name of Object.keys(cached.headers)) {
-    res.setHeader(name, cached.headers[name]);
+  if (isHTML) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    const el = createElement(MDX, {
+      children: cached.body.toString('utf8')
+    });
+    renderToStaticNodeStream(el).pipe(res);
+  } else {
+    res.statusCode = cached.status;
+    for (const name of Object.keys(cached.headers)) {
+      res.setHeader(name, cached.headers[name]);
+    }
+    return cached.body;
   }
-  return cached.body;
 };
