@@ -1,9 +1,17 @@
 const bytes = require('bytes');
 const {parse} = require('url');
 const LRU = require('lru-cache');
+const {resolve} = require('path');
 const fetch = require('node-fetch');
 const toBuffer = require('raw-body');
+const {readFileSync} = require('fs');
+const {createElement} = require('react');
+const {default: MDX} = require('@mdx-js/runtime');
+const {renderToStaticNodeStream} = require('react-dom/server');
 const {IMPORT_ORG = 'importpw', IMPORT_REPO = 'import'} = process.env;
+
+const indexTemplate = resolve(__dirname, 'templates', 'index.html');
+const [HTML_START, HTML_END] = readFileSync(indexTemplate, 'utf8').split('__CONTENT__');
 
 const toURL = ({repo, org, ref, file}) => (
   `https://raw.githubusercontent.com/${org}/${repo}/${ref}/${file}`
@@ -38,6 +46,9 @@ module.exports = async (req, res) => {
     return redirect(res, favicon);
   }
 
+  // If the browser is requesting the URL, then render the Readme using MDX
+  const isHTML = /html/i.test(req.headers.accept);
+
   const at = pathname.lastIndexOf('@');
   if (at !== -1) {
     ref = pathname.substring(at + 1);
@@ -56,7 +67,16 @@ module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'text/plain');
     return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
   }
-  if (!file) file = `${repo}.sh`;
+
+  if (isHTML) {
+    // TODO: Support case-insensitive filename, and non-markdown
+    file = 'Readme.md';
+  }
+
+  if (!file) {
+    file = `${repo}.sh`;
+  }
+
   const params = {repo, org, ref, file};
   const id = JSON.stringify(params);
   let cached = cache.get(id);
@@ -85,9 +105,23 @@ module.exports = async (req, res) => {
     cache.set(id, cached, maxAge);
   }
 
-  res.statusCode = cached.status;
-  for (const name of Object.keys(cached.headers)) {
-    res.setHeader(name, cached.headers[name]);
+  if (isHTML) {
+    // Render the readme as MDX
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    const el = createElement(MDX, {
+      children: cached.body.toString('utf8')
+    });
+    const reactStream = renderToStaticNodeStream(el);
+    res.write(HTML_START);
+    reactStream.pipe(res, {end: false});
+    reactStream.on('end', () => {
+      res.end(HTML_END);
+    });
+  } else {
+    res.statusCode = cached.status;
+    for (const name of Object.keys(cached.headers)) {
+      res.setHeader(name, cached.headers[name]);
+    }
+    return cached.body;
   }
-  return cached.body;
 };
