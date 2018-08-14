@@ -4,5 +4,8 @@
   "alias": "gh.import.pw",
   "features": {
     "cloud": "v2"
+  },
+  "env": {
+    "GITHUB_TOKEN": "@importpw-github-token"
   }
 }
