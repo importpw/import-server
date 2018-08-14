@@ -1,14 +1,23 @@
 const bytes = require('bytes');
 const {parse} = require('url');
 const LRU = require('lru-cache');
-const {resolve} = require('path');
 const fetch = require('node-fetch');
 const toBuffer = require('raw-body');
+const GitHub = require('github-api');
 const {readFileSync} = require('fs');
 const {createElement} = require('react');
 const {default: MDX} = require('@mdx-js/runtime');
+const {basename, extname, resolve} = require('path');
 const {renderToStaticNodeStream} = require('react-dom/server');
-const {IMPORT_ORG = 'importpw', IMPORT_REPO = 'import'} = process.env;
+const {
+  IMPORT_ORG = 'importpw',
+  IMPORT_REPO = 'import',
+  GITHUB_TOKEN
+} = process.env;
+
+const gh = new GitHub({
+  token: GITHUB_TOKEN
+});
 
 const indexTemplate = resolve(__dirname, 'templates', 'index.html');
 const [HTML_START, HTML_END] = readFileSync(indexTemplate, 'utf8').split('__CONTENT__');
@@ -68,13 +77,32 @@ module.exports = async (req, res) => {
     return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
   }
 
-  if (isHTML) {
-    // TODO: Support case-insensitive filename, and non-markdown
-    file = 'Readme.md';
+  // Resolve `ref` using the GitHub API
+  let tree;
+  try {
+    tree = (await gh.getRepo(org, repo).getTree(ref)).data;
+  } catch (err) {
+    console.error(err);
+  }
+  if (tree) {
+    ref = tree.sha;
   }
 
   if (!file) {
-    file = `${repo}.sh`;
+    let defaultName;
+    if (isHTML) {
+      defaultName = 'Readme.md';
+    } else {
+      defaultName = `${repo}.sh`;
+    }
+
+    if (tree) {
+      file = findFile(tree.tree, defaultName);
+    } else {
+      // For the private repo 404 case, we have to guess the filename since
+      // we don't have the GitHub API data of what files are in the repo
+      file = defaultName;
+    }
   }
 
   const params = {repo, org, ref, file};
@@ -125,3 +153,12 @@ module.exports = async (req, res) => {
     return cached.body;
   }
 };
+
+function findFile(tree, name) {
+  const base = basename(name, extname(name));
+  const file = tree.find(file => file.path === name) // exact match
+            || tree.find(file => file.path === base) // basename match
+            || tree.find(file => file.path.toLowerCase() === name.toLowerCase())  // case-insensitive match
+            || tree.find(file => file.path.toLowerCase() === base.toLowerCase()); // case-insensitive base match
+  return file.path;
+}
