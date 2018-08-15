@@ -9,10 +9,12 @@ export default class extends React.Component {
   render() {
     const {contents, org, repo} = this.props;
     const title = `${org}/${repo}`;
+    const favicon = `https://github.com/${org}.png`;
     return (
       <div id="root">
         <Head>
           <title>{title}</title>
+          <link rel="shortcut icon" type="image/png" href={favicon} />
         </Head>
 
         <Markdown source={contents} />
