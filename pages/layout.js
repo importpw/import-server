@@ -9,12 +9,12 @@ export default class extends React.Component {
   }
 
   render() {
-    const {contents, org, repo, ref} = this.props;
+    const {contents, org, repo, committish} = this.props;
     const title = `${org}/${repo}`;
     const favicon = `https://github.com/${org}.png`;
     let ghUrl = `https://github.com/${org}/${repo}`;
-    if (ref !== 'master') {
-      ghUrl += `/tree/${ref}`;
+    if (committish !== 'master') {
+      ghUrl += `/tree/${committish}`;
     }
     return (
       <div id="root">

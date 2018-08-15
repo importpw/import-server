@@ -26,8 +26,8 @@ const gh = new GitHub({
   token: GITHUB_TOKEN
 });
 
-const toURL = ({repo, org, ref, file}) => (
-  `https://raw.githubusercontent.com/${org}/${repo}/${ref}/${file}`
+const toURL = ({repo, org, committish, file}) => (
+  `https://raw.githubusercontent.com/${org}/${repo}/${committish}/${file}`
 );
 
 const cache = LRU({
@@ -47,7 +47,7 @@ function redirect (res, url) {
 }
 
 module.exports = async (req, res) => {
-  let ref = 'master';
+  let committish = 'master';
   let org = IMPORT_ORG;
   let repo = IMPORT_REPO;
 
@@ -72,7 +72,7 @@ module.exports = async (req, res) => {
 
   const at = pathname.lastIndexOf('@');
   if (at !== -1) {
-    ref = pathname.substring(at + 1);
+    committish = pathname.substring(at + 1);
     pathname = pathname.substring(0, at);
   }
   const parts = pathname.substring(1).split('/');
@@ -89,15 +89,15 @@ module.exports = async (req, res) => {
     return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
   }
 
-  // Resolve `ref` using the GitHub API
+  // Resolve `committish` using the GitHub API
   let tree;
   try {
-    tree = (await gh.getRepo(org, repo).getTree(ref)).data;
+    tree = (await gh.getRepo(org, repo).getTree(committish)).data;
   } catch (err) {
     console.error(err);
   }
   if (tree) {
-    ref = tree.sha;
+    committish = tree.sha;
   }
 
   if (!file) {
@@ -117,7 +117,7 @@ module.exports = async (req, res) => {
     }
   }
 
-  const params = {repo, org, ref, file};
+  const params = {repo, org, committish, file};
   const id = JSON.stringify(params);
   let cached = cache.get(id);
 
