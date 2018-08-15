@@ -1,6 +1,8 @@
 import Head from 'next/head';
 import Markdown from 'react-markdown';
 
+import GitHub from '../components/icons/github';
+
 export default class extends React.Component {
   static async getInitialProps({ req, query }) {
     return Object.assign({}, query);
@@ -17,7 +19,13 @@ export default class extends React.Component {
           <link rel="shortcut icon" type="image/png" href={favicon} />
         </Head>
 
-        <Markdown source={contents} />
+        <div id="content">
+          <Markdown source={contents} />
+        </div>
+
+        <div id="footer">
+          <a href="#">View on <GitHub className="icon github" /></a>
+        </div>
 
         <style jsx>{`
           #root {
@@ -44,6 +52,10 @@ export default class extends React.Component {
 
           img {
             max-width: 100%;
+          }
+
+          .icon {
+            height: 1em;
           }
         `}</style>
       </div>
