@@ -9,9 +9,13 @@ export default class extends React.Component {
   }
 
   render() {
-    const {contents, org, repo} = this.props;
+    const {contents, org, repo, ref} = this.props;
     const title = `${org}/${repo}`;
     const favicon = `https://github.com/${org}.png`;
+    let ghUrl = `https://github.com/${org}/${repo}`;
+    if (ref !== 'master') {
+      ghUrl += `/tree/${ref}`;
+    }
     return (
       <div id="root">
         <Head>
@@ -24,7 +28,7 @@ export default class extends React.Component {
         </div>
 
         <div id="footer">
-          <a href="#">View on <GitHub className="icon github" /></a>
+          <a href={ghUrl}>View on <GitHub className="icon github" /></a>
         </div>
 
         <style jsx>{`
