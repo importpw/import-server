@@ -2,9 +2,9 @@ const next = require('next');
 const bytes = require('bytes');
 const {parse} = require('url');
 const LRU = require('lru-cache');
-const fetch = require('node-fetch');
 const toBuffer = require('raw-body');
 const GitHub = require('github-api');
+const fetch = require('isomorphic-fetch');
 const {basename, extname, resolve} = require('path');
 const {
   IMPORT_ORG = 'importpw',
@@ -13,7 +13,12 @@ const {
 } = process.env;
 
 const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev, conf: {   useFileSystemPublicRoutes: false } });
+const app = next({
+  dev,
+  conf: {
+    useFileSystemPublicRoutes: false
+  }
+});
 const handle = app.getRequestHandler();
 const appPrepare = app.prepare();
 
@@ -45,18 +50,21 @@ module.exports = async (req, res) => {
   let ref = 'master';
   let org = IMPORT_ORG;
   let repo = IMPORT_REPO;
+
   const parsedUrl = parse(req.url, true);
   let {pathname, query: {file}} = parsedUrl;
 
+  // Redirect to the user/org's GitHub avatar for the favicon
+  // See: https://stackoverflow.com/a/36380674/376773
   if (pathname === '/favicon.ico') {
-    // Redirect to the user/org's GitHub avatar for the favicon
-    // See: https://stackoverflow.com/a/36380674/376773
     const favicon = `https://github.com/${org}.png`;
     return redirect(res, favicon);
   }
 
-  // If the browser is requesting the URL, then render the Readme
+  // If the browser is requesting the URL, then render with Next.js
   const isHTML = /html/i.test(req.headers.accept);
+
+  // `/_next/*` is Next.js specific files, so let it handle the request
   if (/^\/_next\//.test(pathname)) {
     handle(req, res, parsedUrl);
     return;
