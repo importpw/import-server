@@ -1,26 +1,25 @@
+const next = require('next');
 const bytes = require('bytes');
 const {parse} = require('url');
 const LRU = require('lru-cache');
 const fetch = require('node-fetch');
 const toBuffer = require('raw-body');
 const GitHub = require('github-api');
-const {readFileSync} = require('fs');
-const {createElement} = require('react');
-const {default: MDX} = require('@mdx-js/runtime');
 const {basename, extname, resolve} = require('path');
-const {renderToStaticNodeStream} = require('react-dom/server');
 const {
   IMPORT_ORG = 'importpw',
   IMPORT_REPO = 'import',
-  GITHUB_TOKEN
+  GITHUB_TOKEN  // optional
 } = process.env;
+
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev, conf: {   useFileSystemPublicRoutes: false } });
+const handle = app.getRequestHandler();
+const appPrepare = app.prepare();
 
 const gh = new GitHub({
   token: GITHUB_TOKEN
 });
-
-const indexTemplate = resolve(__dirname, 'templates', 'index.html');
-const [HTML_START, HTML_END] = readFileSync(indexTemplate, 'utf8').split('__CONTENT__');
 
 const toURL = ({repo, org, ref, file}) => (
   `https://raw.githubusercontent.com/${org}/${repo}/${ref}/${file}`
@@ -46,7 +45,8 @@ module.exports = async (req, res) => {
   let ref = 'master';
   let org = IMPORT_ORG;
   let repo = IMPORT_REPO;
-  let {pathname, query: {file}} = parse(req.url, true);
+  const parsedUrl = parse(req.url, true);
+  let {pathname, query: {file}} = parsedUrl;
 
   if (pathname === '/favicon.ico') {
     // Redirect to the user/org's GitHub avatar for the favicon
@@ -55,8 +55,12 @@ module.exports = async (req, res) => {
     return redirect(res, favicon);
   }
 
-  // If the browser is requesting the URL, then render the Readme using MDX
+  // If the browser is requesting the URL, then render the Readme
   const isHTML = /html/i.test(req.headers.accept);
+  if (/^\/_next\//.test(pathname)) {
+    handle(req, res, parsedUrl);
+    return;
+  }
 
   const at = pathname.lastIndexOf('@');
   if (at !== -1) {
@@ -134,18 +138,12 @@ module.exports = async (req, res) => {
   }
 
   if (isHTML) {
-    // Render the readme as MDX
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    const el = createElement(MDX, {
-      children: cached.body.toString('utf8')
-    });
-    const reactStream = renderToStaticNodeStream(el);
-    res.write(HTML_START);
-    reactStream.pipe(res, {end: false});
-    reactStream.on('end', () => {
-      res.end(HTML_END);
-    });
+    // Render the readme as markdown
+    await appPrepare;
+    params.contents = cached.body.toString('utf8');
+    app.render(req, res, '/layout', params);
   } else {
+    // `curl` request or otherwise, serve the raw file
     res.statusCode = cached.status;
     for (const name of Object.keys(cached.headers)) {
       res.setHeader(name, cached.headers[name]);
