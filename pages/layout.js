@@ -58,17 +58,20 @@ export default class extends React.Component {
           }
 
           h2 {
-            margin-top: 50px;
+            margin-top: 75px;
             font-size: 24px;
             font-weight: 400;
           }
 
           h2 code {
-            color: rgb(212, 0, 255);
+            border-radius: 3px;
+            background: #000;
+            color: #fff;
             font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
-            font-size: 20px;
-            font-weight: normal;
+            font-size: 13px;
+            font-weight: bold;
             white-space: pre-wrap;
+            padding: 4px;
           }
 
           h2 code ::before {
