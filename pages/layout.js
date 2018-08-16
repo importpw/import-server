@@ -29,7 +29,8 @@ export default class extends React.Component {
         </div>
 
         <div id="footer">
-          <a href={ghUrl}>View on <GitHub className="icon github" /></a>
+          <a className="github-link" href={ghUrl}>View on <GitHub className="icon github" /></a>
+
         </div>
 
         <style jsx>{`
@@ -72,6 +73,8 @@ export default class extends React.Component {
             font-weight: bold;
             white-space: pre-wrap;
             padding: 4px;
+            position: relative;
+            top: -3px;
           }
 
           h2 code ::before {
@@ -174,7 +177,19 @@ export default class extends React.Component {
           }
 
           .icon {
-            height: 1em;
+            height: 18px;
+            margin-left: 10px;
+          }
+
+          #footer {
+            border-top: 1px solid #eaeaea;
+            padding-top: 20px;
+          }
+
+          #footer a {
+            font-size: 14px;
+            color: #000;
+            display: flex;
           }
         `}</style>
       </div>
