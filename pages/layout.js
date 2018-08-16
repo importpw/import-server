@@ -24,7 +24,7 @@ export default class extends React.Component {
         </Head>
 
         <div id="content">
-          <Markdown source={contents} />
+          <Markdown escapeHtml={false} source={contents} />
         </div>
 
         <div id="footer">
