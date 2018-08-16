@@ -20,6 +20,7 @@ export default class extends React.Component {
       <div id="root">
         <Head>
           <title>{title}</title>
+
           <link rel="shortcut icon" type="image/png" href={favicon} />
         </Head>
 
@@ -33,12 +34,108 @@ export default class extends React.Component {
 
         <style jsx>{`
           #root {
-            margin: 0 auto;
+            margin: auto;
+            margin-bottom: 100px;
+            margin-top: 100px;
             max-width: 650px;
           }
         `}</style>
 
         <style global jsx>{`
+          a {
+            text-decoration: none;
+          }
+
+          h1 {
+            font-size: 32px;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 50px;
+          }
+
+          h1 a {
+            color: #000;
+          }
+
+          h2 {
+            margin-top: 50px;
+          }
+
+          h3 {
+            margin-top: 50px;
+          }
+
+          p {
+            font-size: 14px;
+            line-height: 24px
+          }
+
+          p a {
+            color: #0076FF;
+          }
+
+          ul {
+            padding: 20px;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            list-style-type: none;
+          }
+
+          li {
+            font-size: 14px;
+            line-height: 24px;
+          }
+
+          li::before {
+            content:"-";
+            margin-right: 10px;
+            color: #999;
+          }
+
+          li code {
+            color: rgb(212, 0, 255);
+            font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+          }
+
+          li code::before {
+            content: "\`\";
+          }
+
+          li code::after {
+            content: "\`\";
+          }
+
+          p code {
+            color: rgb(212, 0, 255);
+            font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
+            font-size: 13px;
+            white-space: pre-wrap;
+          }
+
+          p code::before {
+            content: "\`\";
+          }
+
+          p code::after {
+            content: "\`\";
+          }
+
+          pre {
+            padding: 20px;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            margin: 20px 0;
+          }
+
+          pre code {
+            color: rgb(212, 0, 255);
+            font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
+            font-size: 13px;
+            white-space: pre-wrap;
+          }
+
           html,
           body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
