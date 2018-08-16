@@ -59,10 +59,24 @@ export default class extends React.Component {
 
           h2 {
             margin-top: 50px;
+            font-size: 24px;
+            font-weight: 400;
           }
 
-          h3 {
-            margin-top: 50px;
+          h2 code {
+            color: rgb(212, 0, 255);
+            font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
+            font-size: 20px;
+            font-weight: normal;
+            white-space: pre-wrap;
+          }
+
+          h2 code ::before {
+            content: "\`\";
+          }
+
+          h2 code ::after {
+            content: "\`\";
           }
 
           p {
@@ -95,7 +109,7 @@ export default class extends React.Component {
           li code {
             color: rgb(212, 0, 255);
             font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
-            font-size: 0.9em;
+            font-size: 13px;
             white-space: pre-wrap;
           }
 
@@ -134,6 +148,7 @@ export default class extends React.Component {
             font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
             font-size: 13px;
             white-space: pre-wrap;
+            line-height: 20px;
           }
 
           html,
