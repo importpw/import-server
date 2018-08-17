@@ -56,6 +56,10 @@ export default class extends React.Component {
             text-decoration: none;
           }
 
+          a:hover {
+            text-decoration: underline;
+          }
+
           h1 {
             font-size: 32px;
             font-weight: 400;
@@ -84,6 +88,20 @@ export default class extends React.Component {
 
           h2 code ::after {
             content: "\`\";
+          }
+
+          h3 {
+            margin-top: 50px;
+            font-size: 18px;
+            font-weight: 600;
+          }
+
+          hr {
+              border: 0;
+              height: 0;
+              border-top: 1px solid rgba(0, 0, 0, 0.1);
+              border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+              margin-top: 75px;
           }
 
           p {
@@ -127,6 +145,10 @@ export default class extends React.Component {
             content: "\`\";
           }
 
+          li a {
+            color: #0076FF;
+          }
+
           p code {
             color: rgb(212, 0, 255);
             font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
@@ -157,6 +179,20 @@ export default class extends React.Component {
             line-height: 20px;
           }
 
+          td {
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            line-height: 24px;
+          }
+
+          th {
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+          }
+
           .header {
             border-bottom: 1px solid #eaeaea;
             padding-bottom: 50px;
@@ -183,13 +219,6 @@ export default class extends React.Component {
             height: 100%;
             margin: 0;
             padding: 0;
-          }
-
-          hr {
-              border: 0;
-              height: 0;
-              border-top: 1px solid rgba(0, 0, 0, 0.1);
-              border-bottom: 1px solid rgba(255, 255, 255, 0.3);
           }
 
           img {
