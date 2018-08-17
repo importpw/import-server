@@ -2,6 +2,7 @@ import Head from 'next/head';
 import Markdown from 'react-markdown';
 
 import GitHub from '../components/icons/github';
+import EvilRabbit from '../components/icons/evilrabbit';
 
 export default class extends React.Component {
   static async getInitialProps({ req, query }) {
@@ -35,10 +36,10 @@ export default class extends React.Component {
         <div className="footer">
           <div className="wrapper">
             <div className="repository">
-              <p><a className="github-link" href={ghUrl}>View on GitHub</a><GitHub className="icon"/></p>
+                <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
             </div>
             <div className="copyright">
-              <p>Hancrafted by <a href="https://twitter.com/tootallnate">@tootallnate</a> and designed by <a href="https://twitter.com/evilrabbit_">@evilrabbit_</a></p>
+              Hancrafted by <a href="https://twitter.com/tootallnate">@tootallnate</a> and designed by <a href="https://twitter.com/evilrabbit_">@evilrabbit_</a><EvilRabbit className="evilrabbit"/>
             </div>
           </div>
         </div>
@@ -191,17 +192,9 @@ export default class extends React.Component {
             padding-top: 50px;
           }
 
-          .footer p {
-            color: #666;
-          }
-
-          .footer p a {
-            color: #000;
-          }
-
           .footer .wrapper {
             display: flex;
-            width: 1000px;
+            max-width: 1000px;
             margin: 0 auto;
             justify-content: space-between;
           }
@@ -209,11 +202,33 @@ export default class extends React.Component {
           .footer .github-link {
             font-size: 14px;
             color: #000;
+            display: flex;
+            align-items: center;
+          }
+
+          .footer .copyright {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+          }
+
+          .footer .copyright a {
+            color: #000;
+            margin: 0 5px 0 5px;
+          }
+
+          .footer .copyright evilrabbit {
+            display: flex;
+            align-items: center;
           }
 
           .icon {
             height: 18px;
             margin-left: 10px;
+          }
+
+          .evilrabbit {
+            margin-top: -2px;
           }
 
         `}</style>
