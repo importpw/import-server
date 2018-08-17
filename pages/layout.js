@@ -36,8 +36,8 @@ export default class extends React.Component {
             <div className="repository">
                 <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
             </div>
-            <div className="copyright">
-              <a href="/">`import`</a> project by <a href="https://n8.io">@tootallnate</a>, designed by <a href="https://evilrabb.it"><EvilRabbit className="evilrabbit"/></a>
+            <div className="credits">
+              <a href="/">`import`</a> project by <a href="https://n8.io">@tootallnate</a>, design by <a href="https://evilrabb.it"><EvilRabbit className="evilrabbit"/></a>
             </div>
           </div>
         </div>
@@ -223,8 +223,8 @@ export default class extends React.Component {
 
           img {
             max-width: 100%;
-            /*border: 1px solid #eaeaea;
-            border-radius: 5px;*/
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
           }
 
           .footer {
@@ -247,18 +247,18 @@ export default class extends React.Component {
             align-items: center;
           }
 
-          .footer .copyright {
+          .footer .credits {
             font-size: 14px;
             color: #666;
             display: flex;
           }
 
-          .footer .copyright a {
+          .footer .credits a {
             color: #000;
             margin: 0 5px 0 5px;
           }
 
-          .footer .copyright evilrabbit {
+          .footer .credits .evilrabbit {
             display: flex;
             align-items: center;
           }
