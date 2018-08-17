@@ -197,7 +197,7 @@ export default class extends React.Component {
 
           .footer .wrapper {
             display: flex;
-            max-width: 1000px;
+            max-width: 700px;
             margin: 0 auto;
             justify-content: space-between;
           }
