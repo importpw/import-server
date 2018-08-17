@@ -223,6 +223,8 @@ export default class extends React.Component {
 
           img {
             max-width: 100%;
+            /*border: 1px solid #eaeaea;
+            border-radius: 5px;*/
           }
 
           .footer {
