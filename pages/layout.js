@@ -21,12 +21,10 @@ export default class extends React.Component {
       <div className="root">
         <Head>
           <title>{title}</title>
-
           <link rel="shortcut icon" type="image/png" href={favicon} />
         </Head>
 
         <div className="header">
-
         </div>
 
         <div className="content">
@@ -39,7 +37,7 @@ export default class extends React.Component {
                 <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
             </div>
             <div className="copyright">
-              Hancrafted by <a href="https://twitter.com/tootallnate">@tootallnate</a> and designed by <a href="https://twitter.com/evilrabbit_">@evilrabbit_</a><EvilRabbit className="evilrabbit"/>
+              <a href="/">`import`</a> project by <a href="https://n8.io">@tootallnate</a>, designed by <a href="https://evilrabb.it"><EvilRabbit className="evilrabbit"/></a>
             </div>
           </div>
         </div>
@@ -167,6 +165,11 @@ export default class extends React.Component {
             line-height: 20px;
           }
 
+          .header {
+            background: #000;
+            height: 40px;
+          }
+
           html,
           body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -228,7 +231,7 @@ export default class extends React.Component {
           }
 
           .evilrabbit {
-            margin-top: -2px;
+            margin-top: -1px;
           }
 
         `}</style>
