@@ -47,7 +47,7 @@ export default class extends React.Component {
             margin: auto;
             margin-bottom: 100px;
             margin-top: 75px;
-            max-width: 700px;
+            max-width: 650px;
           }
         `}</style>
 
@@ -197,7 +197,7 @@ export default class extends React.Component {
 
           .footer .wrapper {
             display: flex;
-            max-width: 700px;
+            max-width: 900px;
             margin: 0 auto;
             justify-content: space-between;
           }
