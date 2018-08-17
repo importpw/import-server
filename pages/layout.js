@@ -74,16 +74,8 @@ export default class extends React.Component {
           }
 
           h2 code {
-            border-radius: 3px;
-            background: #000;
-            color: #fff;
-            font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
-            font-size: 13px;
-            font-weight: bold;
-            white-space: pre-wrap;
-            padding: 4px;
-            position: relative;
-            top: -3px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            font-weight: 600;
           }
 
           h2 code ::before {
@@ -167,7 +159,15 @@ export default class extends React.Component {
 
           .header {
             border-bottom: 1px solid #eaeaea;
-            height: 40px;
+            padding-bottom: 50px;
+            padding-top: 50px;
+          }
+
+          .header .wrapper {
+            display: flex;
+            max-width: 900px;
+            margin: 0 auto;
+            justify-content: space-between;
           }
 
           html,
@@ -191,8 +191,8 @@ export default class extends React.Component {
 
           .footer {
             border-top: 1px solid #eaeaea;
-            padding-bottom: 50px;
-            padding-top: 50px;
+            padding-bottom: 40px;
+            padding-top: 40px;
           }
 
           .footer .wrapper {
