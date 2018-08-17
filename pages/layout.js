@@ -46,8 +46,8 @@ export default class extends React.Component {
           .content {
             margin: auto;
             margin-bottom: 100px;
-            margin-top: 100px;
-            max-width: 650px;
+            margin-top: 75px;
+            max-width: 700px;
           }
         `}</style>
 
