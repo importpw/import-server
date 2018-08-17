@@ -166,7 +166,7 @@ export default class extends React.Component {
           }
 
           .header {
-            background: #000;
+            border-bottom: 1px solid #eaeaea;
             height: 40px;
           }
 
