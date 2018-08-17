@@ -34,7 +34,12 @@ export default class extends React.Component {
 
         <div className="footer">
           <div className="wrapper">
-            <a className="github-link" href={ghUrl}>View on <GitHub className="icon github" /></a>
+            <div className="repository">
+              <p><a className="github-link" href={ghUrl}>View on GitHub</a><GitHub className="icon"/></p>
+            </div>
+            <div className="copyright">
+              <p>Hancrafted by <a href="https://twitter.com/tootallnate">@tootallnate</a> and designed by <a href="https://twitter.com/evilrabbit_">@evilrabbit_</a></p>
+            </div>
           </div>
         </div>
 
@@ -179,28 +184,37 @@ export default class extends React.Component {
             max-width: 100%;
           }
 
+          .footer {
+            border-top: 1px solid #eaeaea;
+            padding-bottom: 50px;
+            padding-top: 50px;
+          }
+
+          .footer p {
+            color: #666;
+          }
+
+          .footer p a {
+            color: #000;
+          }
+
+          .footer .wrapper {
+            display: flex;
+            width: 1000px;
+            margin: 0 auto;
+            justify-content: space-between;
+          }
+
+          .footer .github-link {
+            font-size: 14px;
+            color: #000;
+          }
+
           .icon {
             height: 18px;
             margin-left: 10px;
           }
 
-          .footer {
-            border-top: 1px solid #eaeaea;
-            padding-bottom: 50px;
-            padding-top: 50px;
-
-          }
-
-          .footer a {
-            font-size: 14px;
-            color: #000;
-            display: flex;
-          }
-
-          .footer .wrapper {
-            width: 1000px;
-            margin: 0 auto;
-          }
         `}</style>
       </div>
     )
