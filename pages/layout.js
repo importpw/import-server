@@ -17,24 +17,29 @@ export default class extends React.Component {
       ghUrl += `/tree/${committish}`;
     }
     return (
-      <div id="root">
+      <div className="root">
         <Head>
           <title>{title}</title>
 
           <link rel="shortcut icon" type="image/png" href={favicon} />
         </Head>
 
-        <div id="content">
+        <div className="header">
+
+        </div>
+
+        <div className="content">
           <Markdown escapeHtml={false} source={contents} />
         </div>
 
-        <div id="footer">
-          <a className="github-link" href={ghUrl}>View on <GitHub className="icon github" /></a>
-
+        <div className="footer">
+          <div className="wrapper">
+            <a className="github-link" href={ghUrl}>View on <GitHub className="icon github" /></a>
+          </div>
         </div>
 
         <style jsx>{`
-          #root {
+          .content {
             margin: auto;
             margin-bottom: 100px;
             margin-top: 100px;
@@ -95,8 +100,6 @@ export default class extends React.Component {
           }
 
           ul {
-            padding: 20px;
-            border: 1px solid #eaeaea;
             border-radius: 5px;
             list-style-type: none;
           }
@@ -181,15 +184,22 @@ export default class extends React.Component {
             margin-left: 10px;
           }
 
-          #footer {
+          .footer {
             border-top: 1px solid #eaeaea;
-            padding-top: 20px;
+            padding-bottom: 50px;
+            padding-top: 50px;
+
           }
 
-          #footer a {
+          .footer a {
             font-size: 14px;
             color: #000;
             display: flex;
+          }
+
+          .footer .wrapper {
+            width: 1000px;
+            margin: 0 auto;
           }
         `}</style>
       </div>
