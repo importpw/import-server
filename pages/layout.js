@@ -107,6 +107,7 @@ export default class extends React.Component {
           ul {
             border-radius: 5px;
             list-style-type: none;
+            padding: 0;
           }
 
           li {
