@@ -89,7 +89,8 @@ module.exports = async (req, res) => {
     return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
   }
 
-  // Resolve `committish` using the GitHub API
+  // Resolve the SHA of the `committish` using the GitHub API
+  let sha;
   let tree;
   try {
     tree = (await gh.getRepo(org, repo).getTree(committish)).data;
@@ -97,7 +98,7 @@ module.exports = async (req, res) => {
     console.error(err);
   }
   if (tree) {
-    committish = tree.sha;
+    sha = tree.sha;
   }
 
   if (!file) {
@@ -149,6 +150,7 @@ module.exports = async (req, res) => {
     // Render the readme as markdown
     await appPrepare;
     params.contents = cached.body.toString('utf8');
+    params.sha = sha;
     app.render(req, res, '/layout', params);
   } else {
     // `curl` request or otherwise, serve the raw file
