@@ -10,8 +10,8 @@ export default class extends React.Component {
   }
 
   render() {
-    const {contents, org, repo, committish} = this.props;
-    const title = `${org}/${repo}`;
+    const {defaultOrg, contents, org, repo, committish} = this.props;
+    const title = defaultOrg === org ? repo : `${org}/${repo}`;
     const favicon = `https://github.com/${org}.png`;
     let ghUrl = `https://github.com/${org}/${repo}`;
     if (committish !== 'master') {

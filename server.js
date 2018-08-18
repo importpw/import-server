@@ -151,6 +151,8 @@ module.exports = async (req, res) => {
     await appPrepare;
     params.contents = cached.body.toString('utf8');
     params.sha = sha;
+    params.defaultOrg = IMPORT_ORG;
+    params.defaultRepo = IMPORT_REPO;
     app.render(req, res, '/layout', params);
   } else {
     // `curl` request or otherwise, serve the raw file
