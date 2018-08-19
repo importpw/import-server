@@ -94,8 +94,19 @@ module.exports = async (req, res) => {
   // Resolve the SHA of the `committish` using the GitHub API
   let sha;
   let tree;
+  let repoDetails;
   try {
-    tree = (await gh.getRepo(org, repo).getTree(committish)).data;
+    const ghRepo = gh.getRepo(org, repo);
+    [ repoDetails, tree ] = await Promise.all([
+      ghRepo.getDetails(),
+      ghRepo.getTree(committish)
+    ]);
+    if (repoDetails.status === 200) {
+      repoDetails = repoDetails.data;
+    } else {
+      repoDetails = null;
+    }
+    tree = tree.data;
   } catch (err) {
     console.error(err);
   }
@@ -153,6 +164,7 @@ module.exports = async (req, res) => {
     await appPrepare;
     params.contents = cached.body.toString('utf8');
     params.sha = sha;
+    params.repoDetails = repoDetails;
     params.defaultOrg = IMPORT_ORG;
     params.defaultRepo = IMPORT_REPO;
     app.render(req, res, '/layout', params);
