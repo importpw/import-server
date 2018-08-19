@@ -172,5 +172,6 @@ function findFile(tree, name) {
             || tree.find(file => file.path === base) // basename match
             || tree.find(file => file.path.toLowerCase() === name.toLowerCase())  // case-insensitive match
             || tree.find(file => file.path.toLowerCase() === base.toLowerCase()); // case-insensitive base match
+  if (!file) return null;
   return file.path;
 }
