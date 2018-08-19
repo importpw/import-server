@@ -23,6 +23,7 @@ export default class extends React.Component {
         <Head>
           <title>{title}</title>
           <link rel="shortcut icon" type="image/png" href={favicon} />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         </Head>
 
         <div className="header">
@@ -51,6 +52,13 @@ export default class extends React.Component {
             margin-bottom: 100px;
             margin-top: 75px;
             max-width: 650px;
+            padding: 0 20px 0 20px;
+          }
+
+          @media (max-width: 768px) {
+            .content {
+                margin-top: 50px;
+            }
           }
         `}</style>
 
@@ -274,6 +282,17 @@ export default class extends React.Component {
 
           .evilrabbit {
             margin-top: -1px;
+          }
+
+          @media (max-width: 768px) {
+            .footer .wrapper {
+              flex-direction: column;
+              align-items: center;
+            }
+
+            .footer .github-link {
+              margin-bottom: 30px;
+            }
           }
 
         `}</style>
