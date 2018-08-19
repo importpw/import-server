@@ -208,6 +208,7 @@ export default class extends React.Component {
           .header {
             background: #fff;
             border-bottom: 1px solid #eaeaea;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.12);
             padding-bottom: 20px;
             padding-top: 20px;
             text-align: center;
