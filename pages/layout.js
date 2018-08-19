@@ -26,7 +26,8 @@ export default class extends React.Component {
         </Head>
 
         <div className="header">
-          <Logotype />
+
+          <a className="logotype" href="/"><Logotype /></a>
         </div>
 
         <div className="content">
