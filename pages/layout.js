@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Markdown from 'react-markdown';
 
+import Logotype from '../components/icons/import';
 import GitHub from '../components/icons/github';
 import EvilRabbit from '../components/icons/evilrabbit';
 
@@ -25,6 +26,7 @@ export default class extends React.Component {
         </Head>
 
         <div className="header">
+          <Logotype />
         </div>
 
         <div className="content">
@@ -195,8 +197,9 @@ export default class extends React.Component {
 
           .header {
             border-bottom: 1px solid #eaeaea;
-            padding-bottom: 50px;
-            padding-top: 50px;
+            padding-bottom: 20px;
+            padding-top: 20px;
+            text-align: center;
           }
 
           .header .wrapper {
