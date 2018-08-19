@@ -14,9 +14,11 @@ export default class extends React.Component {
     const {defaultOrg, contents, org, repo, committish} = this.props;
     const title = defaultOrg === org ? repo : `${org}/${repo}`;
     const favicon = `https://github.com/${org}.png`;
+    let importCommand = `import ${org}/${repo}`;
     let ghUrl = `https://github.com/${org}/${repo}`;
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
+      importCommand += `@${commitish}`;
     }
     return (
       <div className="root">
@@ -24,8 +26,15 @@ export default class extends React.Component {
           <title>{title}</title>
           <link rel="shortcut icon" type="image/png" href={favicon} />
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-          <meta name="og:image" content="https://import.pw/og.png"/>
-          <meta name="twitter:image" content="https://import.pw/og.png"/>
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:image" content="https://import.pw/og.png" />
+          <meta name="twitter:title" content={title} />
+          <meta name="twitter:description" content={importCommand} />
+          <meta property="og:image" content="https://import.pw/og.png" />
+          <meta property="og:url" content="https://import.pw" />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={importCommand} />
+          <meta property="og:type" content="website" />
         </Head>
 
         <div className="header">
