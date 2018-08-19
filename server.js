@@ -62,7 +62,9 @@ module.exports = async (req, res) => {
   }
 
   // If the browser is requesting the URL, then render with Next.js
-  const isHTML = /html/i.test(req.headers.accept) || /twitterbot/i.test(req.headers['user-agent']);
+  const isHTML = /html/i.test(req.headers.accept)
+    || /twitterbot/i.test(req.headers['user-agent'])
+    || /facebookexternalhit/i.test(req.headers['user-agent']);
 
   // `/_next/*` is Next.js specific files, so let it handle the request
   if (/^\/_next\//.test(pathname)) {
