@@ -206,10 +206,13 @@ export default class extends React.Component {
           }
 
           .header {
+            background: #fff;
             border-bottom: 1px solid #eaeaea;
             padding-bottom: 20px;
             padding-top: 20px;
             text-align: center;
+            position: sticky;
+            top: 0;
           }
 
           .header .wrapper {
