@@ -24,6 +24,7 @@ export default class extends React.Component {
           <title>{title}</title>
           <link rel="shortcut icon" type="image/png" href={favicon} />
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+          <meta name="og:image" content="https://og.import.pw/"/>
         </Head>
 
         <div className="header">
