@@ -292,6 +292,8 @@ export default class extends React.Component {
 
           .evilrabbit {
             margin-top: -1px;
+            width: 19px;
+            height: 20px;
           }
 
           @media (max-width: 768px) {
