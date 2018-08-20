@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
   }
 
   // If the browser is requesting the URL, then render with Next.js
-  const isHTML = /html/i.test(req.headers.accept) || isBot(req.headers['user-agent']);
+  const wantsHTML = /html/i.test(req.headers.accept) || isBot(req.headers['user-agent']);
 
   // `/_next/*` is Next.js specific files, so let it handle the request
   if (/^\/_next\//.test(pathname)) {
@@ -115,7 +115,7 @@ module.exports = async (req, res) => {
 
   if (!file) {
     let defaultName;
-    if (isHTML) {
+    if (wantsHTML) {
       defaultName = 'Readme.md';
     } else {
       defaultName = `${repo}.sh`;
@@ -158,7 +158,7 @@ module.exports = async (req, res) => {
     cache.set(id, cached, maxAge);
   }
 
-  if (isHTML) {
+  if (wantsHTML) {
     // Render the readme as markdown
     await appPrepare;
     params.contents = cached.body.toString('utf8');
