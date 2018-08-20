@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Markdown from 'react-markdown';
 import MarkdownImage from '../components/image';
+import MarkdownLink from '../components/link';
 
 // Icons
 import Arrow from '../components/icons/arrow';
@@ -9,7 +10,8 @@ import Logotype from '../components/icons/import';
 import EvilRabbit from '../components/icons/evilrabbit';
 
 const renderers = {
-  image: MarkdownImage
+  image: MarkdownImage,
+  link: MarkdownLink
 };
 
 export default class extends React.Component {
