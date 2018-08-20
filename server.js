@@ -1,6 +1,7 @@
 const next = require('next');
 const bytes = require('bytes');
 const {parse} = require('url');
+const isBot = require('is-bot');
 const LRU = require('lru-cache');
 const toBuffer = require('raw-body');
 const GitHub = require('github-api');
@@ -62,9 +63,7 @@ module.exports = async (req, res) => {
   }
 
   // If the browser is requesting the URL, then render with Next.js
-  const isHTML = /html/i.test(req.headers.accept)
-    || /twitterbot/i.test(req.headers['user-agent'])
-    || /facebookexternalhit/i.test(req.headers['user-agent']);
+  const isHTML = /html/i.test(req.headers.accept) || isBot(req.headers['user-agent']);
 
   // `/_next/*` is Next.js specific files, so let it handle the request
   if (/^\/_next\//.test(pathname)) {
