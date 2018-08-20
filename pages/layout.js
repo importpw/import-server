@@ -16,35 +16,37 @@ export default class extends React.Component {
   }
 
   render() {
-    const {defaultOrg, contents, org, repo, committish} = this.props;
-    const title = defaultOrg === org ? repo : `${org}/${repo}`;
-    const favicon = `https://github.com/${org}.png`;
-    let importCommand = `import ${org}/${repo}`;
-    let ghUrl = `https://github.com/${org}/${repo}`;
-    if (committish !== 'master') {
-      ghUrl += `/tree/${committish}`;
-      importCommand += `@${commitish}`;
-    }
+    const {defaultOrg, contents, org, repo, repoDetails, committish} = this.props;
+    const description = (repoDetails || {}).description;
+    const avatar = `https://github.com/${org}.png`;
     let arrow;
     let orgLogo;
+    let ghUrl = `https://github.com/${org}/${repo}`;
+    let title = 'import ';
     if (defaultOrg !== org) {
       arrow = <Arrow className="arrow" />;
-      orgLogo = <img className="avatar logo" src={favicon} />;
+      orgLogo = <img className="avatar logo" src={avatar} />;
+      title += `${org}/`;
+    }
+    title += repo;
+    if (committish !== 'master') {
+      ghUrl += `/tree/${committish}`;
+      title += `@${commitish}`;
     }
     return (
       <div className="root">
         <Head>
           <title>{title}</title>
-          <link rel="shortcut icon" type="image/png" href={favicon} />
+          <link rel="shortcut icon" type="image/png" href={avatar} />
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:image" content="https://import.pw/og.png" />
           <meta name="twitter:title" content={title} />
-          <meta name="twitter:description" content={importCommand} />
+          <meta name="twitter:description" content={description} />
           <meta property="og:image" content="https://import.pw/og.png" />
           <meta property="og:url" content="https://import.pw" />
           <meta property="og:title" content={title} />
-          <meta property="og:description" content={importCommand} />
+          <meta property="og:description" content={description} />
           <meta property="og:type" content="website" />
         </Head>
 
