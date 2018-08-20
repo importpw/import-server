@@ -1,13 +1,18 @@
 import Head from 'next/head';
 import Markdown from 'react-markdown';
 
-import Logotype from '../components/icons/import';
+import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
+import Logotype from '../components/icons/import';
 import EvilRabbit from '../components/icons/evilrabbit';
 
 export default class extends React.Component {
   static async getInitialProps({ req, query }) {
     return Object.assign({}, query);
+  }
+
+  componentDidMount() {
+    console.log('Right Arrow by See Link from the Noun Project');
   }
 
   render() {
@@ -19,6 +24,12 @@ export default class extends React.Component {
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
       importCommand += `@${commitish}`;
+    }
+    let arrow;
+    let orgLogo;
+    if (defaultOrg !== org) {
+      arrow = <Arrow className="arrow" />;
+      orgLogo = <img className="avatar logo" src={favicon} />;
     }
     return (
       <div className="root">
@@ -38,8 +49,10 @@ export default class extends React.Component {
         </Head>
 
         <div className="header">
-
-          <a className="logotype" href="/"><Logotype /></a>
+          <div className="wrapper">
+            <a className="logotype" href="/"><Logotype className="logotype" /></a>
+            {arrow}{orgLogo}
+          </div>
         </div>
 
         <div className="content">
@@ -61,15 +74,9 @@ export default class extends React.Component {
           .content {
             margin: auto;
             margin-bottom: 100px;
-            margin-top: 75px;
+            margin-top: 50px;
             max-width: 650px;
             padding: 0 20px 0 20px;
-          }
-
-          @media (max-width: 768px) {
-            .content {
-                margin-top: 50px;
-            }
           }
         `}</style>
 
@@ -216,21 +223,39 @@ export default class extends React.Component {
           }
 
           .header {
-            background: #fff;
-            border-bottom: 1px solid #eaeaea;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.12);
-            padding-bottom: 20px;
-            padding-top: 20px;
             text-align: center;
             position: sticky;
             top: 0;
+            overflow: hidden;
+            padding-bottom: 10px;
           }
 
           .header .wrapper {
+            align-items: center;
+            background: #fff;
             display: flex;
-            max-width: 900px;
+            justify-content: center;
             margin: 0 auto;
-            justify-content: space-between;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.12);
+            padding-bottom: 20px;
+            padding-top: 20px;
+            border-bottom: 1px solid #eaeaea;
+          }
+
+          .header .arrow {
+            fill: #999;
+            width: 12px;
+            height: 100%;
+            margin: 0 10px;
+          }
+
+          .header .logo {
+            width: 28px;
+            height: 28px;
+          }
+
+          .header .logotype {
+            width: 35px;
           }
 
           html,
