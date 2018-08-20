@@ -1,6 +1,7 @@
 const next = require('next');
 const bytes = require('bytes');
 const {parse} = require('url');
+const isBot = require('is-bot');
 const LRU = require('lru-cache');
 const toBuffer = require('raw-body');
 const GitHub = require('github-api');
@@ -29,6 +30,12 @@ const gh = new GitHub({
 const toURL = ({repo, org, committish = 'master', file}) => (
   `https://raw.githubusercontent.com/${encodeURIComponent(org)}/${encodeURIComponent(repo)}/${encodeURIComponent(committish)}/${encodeURI(file)}`
 );
+
+const shouldServeHTML = req => {
+  if (/html/i.test(req.headers.accept)) return true;
+  if (/(curl|wget)/i.test(req.headers['user-agent'])) return false;
+  return isBot(req.headers['user-agent']);
+};
 
 const cache = LRU({
   max: bytes('10mb'),
@@ -62,9 +69,7 @@ module.exports = async (req, res) => {
   }
 
   // If the browser is requesting the URL, then render with Next.js
-  const wantsHTML = /html/i.test(req.headers.accept)
-    || /twitterbot/i.test(req.headers['user-agent'])
-    || /facebookexternalhit/i.test(req.headers['user-agent']);
+  const wantsHTML = shouldServeHTML(req);
 
   // `/_next/*` is Next.js specific files, so let it handle the request
   if (/^\/_next\//.test(pathname)) {
