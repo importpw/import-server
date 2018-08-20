@@ -1,13 +1,18 @@
 import Head from 'next/head';
 import Markdown from 'react-markdown';
 
-import Logotype from '../components/icons/import';
+import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
+import Logotype from '../components/icons/import';
 import EvilRabbit from '../components/icons/evilrabbit';
 
 export default class extends React.Component {
   static async getInitialProps({ req, query }) {
     return Object.assign({}, query);
+  }
+
+  componentDidMount() {
+    console.log('Right Arrow by See Link from the Noun Project');
   }
 
   render() {
@@ -19,6 +24,12 @@ export default class extends React.Component {
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
       importCommand += `@${commitish}`;
+    }
+    let arrow;
+    let orgLogo;
+    if (defaultOrg !== org) {
+      arrow = <Arrow className="arrow" />;
+      orgLogo = <img className="avatar logo" src={favicon} />;
     }
     return (
       <div className="root">
@@ -38,8 +49,10 @@ export default class extends React.Component {
         </Head>
 
         <div className="header">
-
-          <a className="logotype" href="/"><Logotype /></a>
+          <div className="wrapper">
+            <a className="logotype" href="/"><Logotype className="logo logotype" /></a>
+            {arrow}{orgLogo}
+          </div>
         </div>
 
         <div className="content">
@@ -228,9 +241,18 @@ export default class extends React.Component {
 
           .header .wrapper {
             display: flex;
-            max-width: 900px;
+            max-width: 100px;
             margin: 0 auto;
             justify-content: space-between;
+          }
+
+          .header .arrow {
+            fill: #aaa;
+            width: 0.8em;
+          }
+
+          .header .logo {
+            width: 2.07em;
           }
 
           html,
