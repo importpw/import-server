@@ -1,10 +1,16 @@
 import Head from 'next/head';
 import Markdown from 'react-markdown';
+import MarkdownImage from '../components/image';
 
+// Icons
 import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
 import Logotype from '../components/icons/import';
 import EvilRabbit from '../components/icons/evilrabbit';
+
+const renderers = {
+  image: MarkdownImage
+};
 
 export default class extends React.Component {
   static async getInitialProps({ req, query }) {
@@ -36,6 +42,14 @@ export default class extends React.Component {
       title += `@${commitish}`;
     }
     title = title.trim();
+
+    const markdown = <Markdown
+      className="markdown"
+      escapeHtml={false}
+      source={contents}
+      renderers={renderers}
+    />;
+
     return (
       <div className="root">
         <Head>
@@ -61,7 +75,7 @@ export default class extends React.Component {
         </div>
 
         <div className="content">
-          <Markdown escapeHtml={false} source={contents} />
+          {markdown}
         </div>
 
         <div className="footer">
