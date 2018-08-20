@@ -16,7 +16,7 @@ export default class extends React.Component {
   }
 
   render() {
-    const {defaultOrg, contents, org, repo, repoDetails, committish} = this.props;
+    const {defaultOrg, defaultRepo, contents, org, repo, repoDetails, committish} = this.props;
     const description = (repoDetails || {}).description;
     const avatar = `https://github.com/${org}.png`;
     let arrow;
@@ -28,11 +28,14 @@ export default class extends React.Component {
       orgLogo = <img className="avatar logo" src={avatar} />;
       title += `${org}/`;
     }
-    title += repo;
+    if (defaultRepo !== repo) {
+      title += repo;
+    }
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
       title += `@${commitish}`;
     }
+    title = title.trim();
     return (
       <div className="root">
         <Head>
