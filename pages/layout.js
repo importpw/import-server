@@ -246,6 +246,7 @@ export default class extends React.Component {
             fill: #999;
             width: 12px;
             height: 100%;
+            margin: 0 10px;
           }
 
           .header .logo {
