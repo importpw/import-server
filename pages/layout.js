@@ -247,7 +247,7 @@ export default class extends React.Component {
           }
 
           .header .arrow {
-            fill: #aaa;
+            fill: #999;
             width: 0.8em;
           }
 
