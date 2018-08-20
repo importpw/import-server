@@ -27,8 +27,8 @@ const gh = new GitHub({
   token: GITHUB_TOKEN
 });
 
-const toURL = ({repo, org, committish, file}) => (
-  `https://raw.githubusercontent.com/${org}/${repo}/${committish}/${file}`
+const toURL = ({repo, org, committish = 'master', file}) => (
+  `https://raw.githubusercontent.com/${encodeURIComponent(org)}/${encodeURIComponent(repo)}/${encodeURIComponent(committish)}/${encodeURI(file)}`
 );
 
 const cache = LRU({
