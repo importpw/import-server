@@ -49,7 +49,7 @@ export default class extends React.Component {
         <div className="footer">
           <div className="wrapper">
             <div className="repository">
-                <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
+              <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
             </div>
             <div className="credits">
               <a href="/">`import`</a> project by <a href="https://n8.io">@tootallnate</a>, design by <a href="https://evilrabb.it"><EvilRabbit className="evilrabbit"/></a>
@@ -278,16 +278,11 @@ export default class extends React.Component {
             font-size: 14px;
             color: #666;
             display: flex;
+            white-space: pre-wrap;
           }
 
           .footer .credits a {
             color: #000;
-            margin: 0 5px 0 5px;
-          }
-
-          .footer .credits .evilrabbit {
-            display: flex;
-            align-items: center;
           }
 
           .icon {
