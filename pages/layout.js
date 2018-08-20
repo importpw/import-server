@@ -258,6 +258,11 @@ export default class extends React.Component {
             width: 35px;
           }
 
+          .header .avatar {
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+          }
+
           html,
           body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -275,8 +280,6 @@ export default class extends React.Component {
 
           img {
             max-width: 100%;
-            border: 1px solid #eaeaea;
-            border-radius: 5px;
           }
 
           .footer {
