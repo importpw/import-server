@@ -50,7 +50,7 @@ export default class extends React.Component {
 
         <div className="header">
           <div className="wrapper">
-            <a className="logotype" href="/"><Logotype className="logo logotype" /></a>
+            <a className="logotype" href="/"><Logotype className="logotype" /></a>
             {arrow}{orgLogo}
           </div>
         </div>
@@ -74,15 +74,9 @@ export default class extends React.Component {
           .content {
             margin: auto;
             margin-bottom: 100px;
-            margin-top: 75px;
+            margin-top: 50px;
             max-width: 650px;
             padding: 0 20px 0 20px;
-          }
-
-          @media (max-width: 768px) {
-            .content {
-                margin-top: 50px;
-            }
           }
         `}</style>
 
@@ -229,30 +223,38 @@ export default class extends React.Component {
           }
 
           .header {
-            background: #fff;
-            border-bottom: 1px solid #eaeaea;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.12);
-            padding-bottom: 20px;
-            padding-top: 20px;
             text-align: center;
             position: sticky;
             top: 0;
+            overflow: hidden;
+            padding-bottom: 10px;
           }
 
           .header .wrapper {
+            align-items: center;
+            background: #fff;
             display: flex;
-            max-width: 100px;
+            justify-content: center;
             margin: 0 auto;
-            justify-content: space-between;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.12);
+            padding-bottom: 20px;
+            padding-top: 20px;
+            border-bottom: 1px solid #eaeaea;
           }
 
           .header .arrow {
             fill: #999;
-            width: 0.8em;
+            width: 12px;
+            height: 100%;
           }
 
           .header .logo {
-            width: 2.07em;
+            width: 28px;
+            height: 28px;
+          }
+
+          .header .logotype {
+            width: 35px;
           }
 
           html,
