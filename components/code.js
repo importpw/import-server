@@ -4,6 +4,6 @@ export default function MarkdownCode (props) {
   if (props.language) {
     return <Highlight className={props.language}>{props.value}</Highlight>;
   } else {
-    return <pre><code>{props.value}</code></pre>;
+    return <pre><code className="hljs">{props.value}</code></pre>;
   }
 }
