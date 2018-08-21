@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Markdown from 'react-markdown';
+import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
 import MarkdownLink from '../components/link';
 
@@ -10,6 +11,7 @@ import Logotype from '../components/icons/import';
 import EvilRabbit from '../components/icons/evilrabbit';
 
 const renderers = {
+  code: MarkdownCode,
   image: MarkdownImage,
   link: MarkdownLink
 };
@@ -57,6 +59,7 @@ export default class extends React.Component {
         <Head>
           <title>{title}</title>
           <link rel="shortcut icon" type="image/png" href={avatar} />
+          <link rel="stylesheet" href="https://hljs.import.pw/xcode.css" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:image" content="https://import.pw/og.png" />
