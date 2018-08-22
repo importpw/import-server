@@ -59,7 +59,6 @@ export default class extends React.Component {
         <Head>
           <title>{title}</title>
           <link rel="shortcut icon" type="image/png" href={avatar} />
-          <link rel="stylesheet" href="https://hljs.import.pw/tomorrow.css" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:image" content="https://import.pw/og.png" />
