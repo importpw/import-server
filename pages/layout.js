@@ -227,7 +227,6 @@ export default class extends React.Component {
             color: #000;
             font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
             font-size: 13px;
-            white-space: pre-wrap;
             line-height: 20px;
           }
 
