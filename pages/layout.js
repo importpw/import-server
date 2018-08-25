@@ -108,6 +108,10 @@ export default class extends React.Component {
             text-decoration: none;
           }
 
+          a:visited {
+            color: inherit;
+          }
+
           a:hover {
             text-decoration: underline;
           }
