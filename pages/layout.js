@@ -110,7 +110,7 @@ export default class extends React.Component {
           }
 
           a:visited {
-            color: inherit;
+            color: #0076FF;
           }
 
           a:hover {
