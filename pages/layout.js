@@ -105,6 +105,7 @@ export default class extends React.Component {
 
         <style global jsx>{`
           a {
+            color: #0076FF;
             text-decoration: none;
           }
 
@@ -165,10 +166,6 @@ export default class extends React.Component {
             line-height: 24px
           }
 
-          p a {
-            color: #0076FF;
-          }
-
           ul {
             border-radius: 5px;
             list-style-type: none;
@@ -199,10 +196,6 @@ export default class extends React.Component {
 
           li code::after {
             content: "\`\";
-          }
-
-          li a {
-            color: #0076FF;
           }
 
           p code {
