@@ -11,7 +11,7 @@ export default class extends React.Component {
     e.preventDefault();
     const { code } = this.props;
 
-    const bootstrap = 'f="$(mktemp)" && cat > "$f" && chmod +x "$f" && IMPORT_CACHE="$(mktemp -d)" IMPORT_DEBUG=1 "$f" 2>&1';
+    const bootstrap = 'f="$(mktemp)" && cat > "$f" && chmod +x "$f" && IMPORT_CACHE="$(mktemp -d)" "$f" 2>&1';
     const res = await fetch('https://nexec.n8.io/sh?arg=-c&arg=' + encodeURIComponent(bootstrap), {
       method: 'POST',
       body: code,
