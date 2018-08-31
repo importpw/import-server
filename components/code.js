@@ -1,9 +1,17 @@
+import CodeExample from './code-example';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
-export default function MarkdownCode (props) {
-  if (props.language) {
-    return <SyntaxHighlighter language={props.language} useInlineStyles={false}>{props.value}</SyntaxHighlighter>;
+export default function MarkdownCode ({ language, value }) {
+  const isExecutable = value.substring(0, 2) === '#!';
+  let pre;
+  if (language) {
+    pre = <SyntaxHighlighter language={language} useInlineStyles={false}>{value}</SyntaxHighlighter>;
   } else {
-    return <pre className="hljs"><code>{props.value}</code></pre>;
+    pre = <pre className="hljs"><code>{value}</code></pre>;
+  }
+  if (isExecutable) {
+    return <CodeExample code={value}>{pre}</CodeExample>;
+  } else {
+    return pre;
   }
 }
