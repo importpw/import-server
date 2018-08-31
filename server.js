@@ -87,13 +87,12 @@ module.exports = async (req, res) => {
 
   if (numParts === 1) {
     if (parts[0]) repo = parts[0];
-  } else if (numParts === 2) {
+  } else if (numParts >= 2) {
     if (parts[0]) org = parts[0];
     if (parts[1]) repo = parts[1];
-  } else {
-    res.statusCode = 400;
-    res.setHeader('Content-Type', 'text/plain');
-    return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
+  }
+  if (!file) {
+    file = decodeURI(parts.slice(2).join('/'));
   }
 
   // Resolve the SHA of the `committish` using the GitHub API
