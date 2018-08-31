@@ -4,17 +4,13 @@ import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
 import MarkdownLink from '../components/link';
 
+import curry from '../components/curry';
+
 // Icons
 import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
 import Logotype from '../components/icons/import';
 import EvilRabbit from '../components/icons/evilrabbit';
-
-const renderers = {
-  code: MarkdownCode,
-  image: MarkdownImage,
-  link: MarkdownLink
-};
 
 export default class extends React.Component {
   static async getInitialProps({ req, query }) {
@@ -49,6 +45,12 @@ export default class extends React.Component {
       title += `@${commitish}`;
     }
     title = title.trim();
+
+    const renderers = {
+      code: MarkdownCode,
+      image: MarkdownImage,
+      link: curry(MarkdownLink, this.props)
+    };
 
     const markdown = <Markdown
       className="markdown"
