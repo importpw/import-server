@@ -33,13 +33,16 @@ export default class extends React.Component {
     let orgLogo;
     let ghUrl = `https://github.com/${org}/${repo}`;
     let title = 'import ';
+    let ogImageUrl = 'https://og.import.pw/';
     if (defaultOrg !== org) {
       arrow = <Arrow className="arrow" />;
       orgLogo = <img className="avatar logo" src={avatar} />;
       title += `${org}/`;
+      ogImageUrl += encodeURIComponent(org) + '/';
     }
     if (defaultRepo !== repo) {
       title += repo;
+      ogImageUrl += encodeURIComponent(repo);
     }
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
@@ -61,10 +64,10 @@ export default class extends React.Component {
           <link rel="shortcut icon" type="image/png" href={avatar} />
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:image" content="https://import.pw/og.png" />
+          <meta name="twitter:image" content={ogImageUrl} />
           <meta name="twitter:title" content={title} />
           <meta name="twitter:description" content={description} />
-          <meta property="og:image" content="https://import.pw/og.png" />
+          <meta property="og:image" content={ogImageUrl} />
           <meta property="og:url" content="https://import.pw" />
           <meta property="og:title" content={title} />
           <meta property="og:description" content={description} />
