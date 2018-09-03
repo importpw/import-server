@@ -244,6 +244,7 @@ export default class extends React.Component {
             top: 0;
             overflow: hidden;
             padding-bottom: 10px;
+            z-index: 10;
           }
 
           .header .wrapper {
