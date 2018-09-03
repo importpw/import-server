@@ -1,33 +1,32 @@
-import { encode } from 'querystring';
-import fetch from 'isomorphic-fetch';
+import CodeExec from './code-exec';
 
 export default class extends React.Component {
   constructor(...args) {
     super(...args);
+    this.state = {
+      showing: false
+    };
     this.runExample = this.runExample.bind(this);
   }
 
-  async runExample(e) {
+  runExample(e) {
     e.preventDefault();
-    const { code } = this.props;
-
-    const nexec = 'nexec-acxrmewivr.n8.io';
-    const bootstrap = 'dir="$(mktemp -d)"; trap "rm -rf $dir" EXIT TERM INT; cat > "$dir/script" && chmod +x "$dir/script" && IMPORT_CACHE="$dir" "$dir/script" 2>&1';
-    const res = await fetch(`https://${nexec}/sh?arg=-c&arg=` + encodeURIComponent(bootstrap), {
-      method: 'POST',
-      body: code,
-    });
-    const body = await res.text();
-    console.log(body);
+    this.setState({ showing: true });
   }
 
   render() {
+    let overlay;
+    if (this.state.showing) {
+      overlay = <CodeExec code={this.props.code} />;
+    }
     return (
       <div className="code-example">
         <a className="run" onClick={ this.runExample } href="#">
           Run this code
         </a>
         { this.props.children }
+        { overlay }
+
         <style jsx>{`
           .code-example {
             position: relative;
