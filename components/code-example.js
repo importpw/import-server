@@ -11,8 +11,9 @@ export default class extends React.Component {
     e.preventDefault();
     const { code } = this.props;
 
-    const bootstrap = 'f="$(mktemp)" && cat > "$f" && chmod +x "$f" && IMPORT_CACHE="$(mktemp -d)" "$f" 2>&1';
-    const res = await fetch('https://nexec.n8.io/sh?arg=-c&arg=' + encodeURIComponent(bootstrap), {
+    const nexec = 'nexec-acxrmewivr.n8.io';
+    const bootstrap = 'dir="$(mktemp -d)"; trap "rm -rf $dir" EXIT TERM INT; cat > "$dir/script" && chmod +x "$dir/script" && IMPORT_CACHE="$dir" "$dir/script" 2>&1';
+    const res = await fetch(`https://${nexec}/sh?arg=-c&arg=` + encodeURIComponent(bootstrap), {
       method: 'POST',
       body: code,
     });
@@ -23,7 +24,9 @@ export default class extends React.Component {
   render() {
     return (
       <div className="code-example">
-        <a className="run" onClick={this.runExample} href="#">Run this code</a>
+        <a className="run" onClick={ this.runExample } href="#">
+          Run this code
+        </a>
         { this.props.children }
         <style jsx>{`
           .code-example {
@@ -34,7 +37,6 @@ export default class extends React.Component {
             position: absolute;
             top: 0;
             right: 0;
-            color: red;
             padding: 6px;
             font-size: 0.75em;
             border-left: 1px solid #eaeaea;
