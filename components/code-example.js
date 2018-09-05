@@ -24,7 +24,7 @@ export default class extends React.Component {
     let overlay;
     if (this.state.showing) {
       overlay = (
-        <NewWindow name="code-example" title="foo" center="parent" features={{ width: 600, height: 384 }} copyStyles={true} onUnload={this.onWindowClose}>
+        <NewWindow name="code-example" title="Code Example" center="parent" features={{ width: 600, height: 384 }} copyStyles={true} onUnload={this.onWindowClose}>
           <CodeExec code={ this.props.code } />
         </NewWindow>
       );
