@@ -12,9 +12,8 @@ export default class extends React.Component {
     const { term } = this.refs.xterm;
     term.write('$ Running...\r\n');
 
-    const nexec = 'nexec-acxrmewivr.n8.io';
     const bootstrap = 'dir="$(mktemp -d)"; trap "rm -rf $dir" EXIT TERM INT; cat > "$dir/script" && chmod +x "$dir/script" && IMPORT_CACHE="$dir" "$dir/script" 2>&1';
-    const res = await fetch(`https://${nexec}/sh?arg=-c&arg=${encodeURIComponent(bootstrap)}`, {
+    const res = await fetch(`https://exec.import.pw/sh?arg=-c&arg=${encodeURIComponent(bootstrap)}`, {
       method: 'POST',
       body: code,
     });
