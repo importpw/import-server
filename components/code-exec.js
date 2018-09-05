@@ -1,19 +1,16 @@
 import { encode } from 'querystring';
 import fetch from 'isomorphic-fetch';
+import Xterm from './xterm';
 
 export default class extends React.Component {
   constructor(...args) {
     super(...args);
-    this.state = {
-      running: false,
-      result: null
-    };
   }
 
   async componentDidMount() {
-    this.setState({ running: true });
-
     const { code } = this.props;
+    const { term } = this.refs.xterm;
+    term.write('$ Running...\r\n');
 
     const nexec = 'nexec-acxrmewivr.n8.io';
     const bootstrap = 'dir="$(mktemp -d)"; trap "rm -rf $dir" EXIT TERM INT; cat > "$dir/script" && chmod +x "$dir/script" && IMPORT_CACHE="$dir" "$dir/script" 2>&1';
@@ -22,27 +19,20 @@ export default class extends React.Component {
       body: code,
     });
     const body = await res.text();
-    this.setState({ running: false, result: body });
+    term.write(body.replace(/\n/g, '\r\n'));
   }
 
   render() {
     return (
-      <pre><code>
-        { this.state.result }
-      </code>
-      <style jsx>{`
-        pre {
-          background-color: rgba(255, 255, 255, 0.8);
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          margin: 0;
-          padding: 2em;
-        }
-      `}</style>
-      </pre>
+      <div className="wrapper">
+        <Xterm ref="xterm" lineHeight={1.2} />
+        <style jsx>{`
+          .wrapper {
+            background-color: black;
+            padding: 10px;
+          }
+        `}</style>
+      </div>
     );
   }
 }

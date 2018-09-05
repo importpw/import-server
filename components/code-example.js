@@ -1,4 +1,5 @@
 import CodeExec from './code-exec';
+import NewWindow from 'react-new-window';
 
 export default class extends React.Component {
   constructor(...args) {
@@ -7,6 +8,7 @@ export default class extends React.Component {
       showing: false
     };
     this.runExample = this.runExample.bind(this);
+    this.onWindowClose = this.onWindowClose.bind(this);
   }
 
   runExample(e) {
@@ -14,17 +16,25 @@ export default class extends React.Component {
     this.setState({ showing: true });
   }
 
+  onWindowClose() {
+    this.setState({ showing: false });
+  }
+
   render() {
     let overlay;
     if (this.state.showing) {
-      overlay = <CodeExec code={this.props.code} />;
+      overlay = (
+        <NewWindow name="code-example" title="foo" center="parent" features={{ width: 600, height: 384 }} copyStyles={true} onUnload={this.onWindowClose}>
+          <CodeExec code={ this.props.code } />
+        </NewWindow>
+      );
     }
     return (
       <div className="code-example">
+        { this.props.children }
         <a className="run" onClick={ this.runExample } href="#">
           Run this code
         </a>
-        { this.props.children }
         { overlay }
 
         <style jsx>{`
