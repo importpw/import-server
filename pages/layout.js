@@ -7,10 +7,10 @@ import MarkdownLink from '../components/link';
 import curry from '../components/curry';
 
 // Icons
+import Zeit from '../components/icons/zeit';
 import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
 import Logotype from '../components/icons/import';
-import EvilRabbit from '../components/icons/evilrabbit';
 
 export default class extends React.Component {
   static async getInitialProps({ req, query }) {
@@ -93,7 +93,7 @@ export default class extends React.Component {
               <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
             </div>
             <div className="credits">
-              <a href="/">`import`</a> project by <a href="https://n8.io">@tootallnate</a>, design by <a href="https://evilrabb.it"><EvilRabbit className="evilrabbit"/></a>
+              Crafted by <a href="https://zeit.co"><Zeit className="zeit" /></a>
             </div>
           </div>
         </div>
@@ -300,6 +300,7 @@ export default class extends React.Component {
 
           .footer {
             border-top: 1px solid #eaeaea;
+            color: #000;
             padding-bottom: 40px;
             padding-top: 40px;
           }
@@ -313,14 +314,13 @@ export default class extends React.Component {
 
           .footer .github-link {
             font-size: 14px;
-            color: #000;
             display: flex;
             align-items: center;
           }
 
           .footer .credits {
-            font-size: 14px;
             color: #666;
+            font-size: 14px;
             display: flex;
             white-space: pre-wrap;
           }
@@ -334,10 +334,10 @@ export default class extends React.Component {
             margin-left: 10px;
           }
 
-          .evilrabbit {
-            margin-top: -1px;
-            width: 19px;
-            height: 20px;
+          .zeit {
+            margin-top: 2px;
+            margin-left: 2px;
+            height: 1em;
           }
 
           @media (max-width: 768px) {
