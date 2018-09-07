@@ -313,6 +313,7 @@ export default class extends React.Component {
           }
 
           .footer .github-link {
+            color: #000;
             font-size: 14px;
             display: flex;
             align-items: center;
