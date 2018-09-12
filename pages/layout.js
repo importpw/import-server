@@ -4,6 +4,7 @@ import Markdown from 'react-markdown';
 import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
 import MarkdownLink from '../components/link';
+import MarkdownText from '../components/text';
 
 import curry from '../components/curry';
 
@@ -50,7 +51,8 @@ export default class extends React.Component {
     const renderers = {
       code: MarkdownCode,
       image: MarkdownImage,
-      link: curry(MarkdownLink, this.props)
+      link: curry(MarkdownLink, this.props),
+      text: MarkdownText
     };
 
     const markdown = <Markdown
