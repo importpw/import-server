@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import Markdown from 'react-markdown';
 import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
@@ -78,7 +79,7 @@ export default class extends React.Component {
 
         <div className="header">
           <div className="wrapper">
-            <a className="logotype" href="/"><Logotype className="logotype" /></a>
+            <Link href="/"><a className="logotype"><Logotype className="logotype" /></a></Link>
             {arrow}{orgLogo}
           </div>
         </div>
