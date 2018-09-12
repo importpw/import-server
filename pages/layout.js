@@ -15,8 +15,10 @@ import GitHub from '../components/icons/github';
 import Logotype from '../components/icons/import';
 
 export default class extends React.Component {
-  static async getInitialProps({ req, query }) {
-    return Object.assign({}, query);
+  static async getInitialProps(context) {
+    return Object.assign({}, context.query, {
+      pathname: context.asPath
+    });
   }
 
   componentDidMount() {
