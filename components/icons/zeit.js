@@ -6,10 +6,10 @@ export default props => (
   >
     <defs>
       <linearGradient x1="100.93%" y1="181.283%" x2="41.769%" y2="100%" id="a">
-        <stop stop-color="#FFF" offset="0%"/>
+        <stop stopColor="#FFF" offset="0%"/>
         <stop offset="100%"/>
       </linearGradient>
     </defs>
-    <path d="M350 150l57 100H293z" transform="translate(-293 -150)" fill="url(#a)" fill-rule="evenodd" />
+    <path d="M350 150l57 100H293z" transform="translate(-293 -150)" fill="url(#a)" fillRule="evenodd" />
   </svg>
 );
