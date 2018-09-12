@@ -1,9 +1,16 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import Markdown from 'react-markdown';
+import MarkdownCode from '../components/code';
+import MarkdownImage from '../components/image';
+import MarkdownLink from '../components/link';
 
-import Logotype from '../components/icons/import';
+import curry from '../components/curry';
+
+// Icons
+import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
+import Logotype from '../components/icons/import';
 import EvilRabbit from '../components/icons/evilrabbit';
 
 export default class extends React.Component {
@@ -11,45 +18,80 @@ export default class extends React.Component {
     return Object.assign({}, query);
   }
 
+  componentDidMount() {
+    console.log('Right Arrow by See Link from the Noun Project');
+  }
+
   render() {
-    const {defaultOrg, contents, org, repo, committish} = this.props;
-    const title = defaultOrg === org ? repo : `${org}/${repo}`;
-    const favicon = `https://github.com/${org}.png`;
-    let importCommand = `import ${org}/${repo}`;
+    const {defaultOrg, defaultRepo, contents, org, repo, repoDetails, committish} = this.props;
+    const description = (repoDetails || {}).description;
+    const avatar = `https://github.com/${org}.png`;
+    let arrow;
+    let orgLogo;
     let ghUrl = `https://github.com/${org}/${repo}`;
+    let title = 'import ';
+    let ogImageUrl = 'https://og.import.pw/';
+    if (defaultOrg !== org) {
+      arrow = <Arrow className="arrow" />;
+      orgLogo = <img className="avatar logo" src={avatar} />;
+      title += `${org}/`;
+      ogImageUrl += encodeURIComponent(org) + '/';
+    }
+    if (defaultRepo !== repo) {
+      title += repo;
+      ogImageUrl += encodeURIComponent(repo);
+    }
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
-      importCommand += `@${commitish}`;
+      title += `@${commitish}`;
     }
+    title = title.trim();
+
+    const renderers = {
+      code: MarkdownCode,
+      image: MarkdownImage,
+      link: curry(MarkdownLink, this.props)
+    };
+
+    const markdown = <Markdown
+      className="markdown"
+      escapeHtml={false}
+      source={contents}
+      renderers={renderers}
+    />;
+
     return (
       <div className="root">
         <Head>
           <title>{title}</title>
-          <link rel="shortcut icon" type="image/png" href={favicon} />
+          <link rel="shortcut icon" type="image/png" href={avatar} />
           <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:image" content="https://import.pw/og.png" />
+          <meta name="twitter:image" content={ogImageUrl} />
           <meta name="twitter:title" content={title} />
-          <meta name="twitter:description" content={importCommand} />
-          <meta property="og:image" content="https://import.pw/og.png" />
+          <meta name="twitter:description" content={description} />
+          <meta property="og:image" content={ogImageUrl} />
           <meta property="og:url" content="https://import.pw" />
           <meta property="og:title" content={title} />
-          <meta property="og:description" content={importCommand} />
+          <meta property="og:description" content={description} />
           <meta property="og:type" content="website" />
         </Head>
 
         <div className="header">
-          <Link><a className="logotype" href="/"><Logotype /></a></Link>
+          <div className="wrapper">
+            <Link href="/"><a className="logotype"><Logotype className="logotype" /></a></Link>
+            {arrow}{orgLogo}
+          </div>
         </div>
 
         <div className="content">
-          <Markdown escapeHtml={false} source={contents} />
+          {markdown}
         </div>
 
         <div className="footer">
           <div className="wrapper">
             <div className="repository">
-                <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
+              <a className="github-link" href={ghUrl}>View on GitHub<GitHub className="icon"/></a>
             </div>
             <div className="credits">
               <a href="/">`import`</a> project by <a href="https://n8.io">@tootallnate</a>, design by <a href="https://evilrabb.it"><EvilRabbit className="evilrabbit"/></a>
@@ -61,20 +103,15 @@ export default class extends React.Component {
           .content {
             margin: auto;
             margin-bottom: 100px;
-            margin-top: 75px;
+            margin-top: 50px;
             max-width: 650px;
             padding: 0 20px 0 20px;
-          }
-
-          @media (max-width: 768px) {
-            .content {
-                margin-top: 50px;
-            }
           }
         `}</style>
 
         <style global jsx>{`
           a {
+            color: #0076FF;
             text-decoration: none;
           }
 
@@ -131,10 +168,6 @@ export default class extends React.Component {
             line-height: 24px
           }
 
-          p a {
-            color: #0076FF;
-          }
-
           ul {
             border-radius: 5px;
             list-style-type: none;
@@ -186,27 +219,17 @@ export default class extends React.Component {
             content: "\`\";
           }
 
-          pre {
-            padding: 20px;
-            border: 1px solid #eaeaea;
-            border-radius: 5px;
-            margin: 20px 0;
-          }
-
           pre code {
-            color: rgb(212, 0, 255);
             font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
             font-size: 13px;
-            white-space: pre-wrap;
             line-height: 20px;
           }
 
           td {
             font-size: 14px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-            padding-top: 10px;
-            padding-bottom: 10px;
             line-height: 24px;
+            padding: 10px;
           }
 
           th {
@@ -216,21 +239,45 @@ export default class extends React.Component {
           }
 
           .header {
-            background: #fff;
-            border-bottom: 1px solid #eaeaea;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.12);
-            padding-bottom: 20px;
-            padding-top: 20px;
             text-align: center;
             position: sticky;
             top: 0;
+            overflow: hidden;
+            padding-bottom: 10px;
+            z-index: 10;
           }
 
           .header .wrapper {
+            align-items: center;
+            background: #fff;
             display: flex;
-            max-width: 900px;
+            justify-content: center;
             margin: 0 auto;
-            justify-content: space-between;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.12);
+            padding-bottom: 20px;
+            padding-top: 20px;
+            border-bottom: 1px solid #eaeaea;
+          }
+
+          .header .arrow {
+            fill: #999;
+            width: 12px;
+            height: 100%;
+            margin: 0 10px;
+          }
+
+          .header .logo {
+            width: 28px;
+            height: 28px;
+          }
+
+          .header .logotype {
+            width: 35px;
+          }
+
+          .header .avatar {
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
           }
 
           html,
@@ -250,8 +297,6 @@ export default class extends React.Component {
 
           img {
             max-width: 100%;
-            border: 1px solid #eaeaea;
-            border-radius: 5px;
           }
 
           .footer {
@@ -278,16 +323,11 @@ export default class extends React.Component {
             font-size: 14px;
             color: #666;
             display: flex;
+            white-space: pre-wrap;
           }
 
           .footer .credits a {
             color: #000;
-            margin: 0 5px 0 5px;
-          }
-
-          .footer .credits .evilrabbit {
-            display: flex;
-            align-items: center;
           }
 
           .icon {
@@ -297,6 +337,8 @@ export default class extends React.Component {
 
           .evilrabbit {
             margin-top: -1px;
+            width: 19px;
+            height: 20px;
           }
 
           @media (max-width: 768px) {
@@ -308,6 +350,106 @@ export default class extends React.Component {
             .footer .github-link {
               margin-bottom: 30px;
             }
+          }
+
+          /* Highlight.js theme */
+          .hljs {
+            display: block;
+            overflow-x: auto;
+            color: #333;
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #eaeaea;
+            border-radius: 5px;
+            margin: 20px 0;
+          }
+
+          .hljs-comment,
+          .hljs-quote {
+            color: #777;
+            font-style: italic;
+          }
+
+          .hljs-keyword,
+          .hljs-selector-tag,
+          .hljs-subst {
+            color: #333;
+            font-weight: bold;
+          }
+
+          .hljs-number,
+          .hljs-literal {
+            color: #777;
+          }
+
+          .hljs-string,
+          .hljs-doctag,
+          .hljs-formula {
+            color: #333;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAJ0lEQVQIW2O8e/fufwYGBgZBQUEQxcCIIfDu3Tuwivfv30NUoAsAALHpFMMLqZlPAAAAAElFTkSuQmCC) repeat;
+          }
+
+          .hljs-title,
+          .hljs-section,
+          .hljs-selector-id {
+            color: #000;
+            font-weight: bold;
+          }
+
+          .hljs-subst {
+            font-weight: normal;
+          }
+
+          .hljs-class .hljs-title,
+          .hljs-type,
+          .hljs-name {
+            color: #333;
+            font-weight: bold;
+          }
+
+          .hljs-tag {
+            color: #333;
+          }
+
+          .hljs-regexp {
+              color: #333;
+              background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAICAYAAADA+m62AAAAPUlEQVQYV2NkQAN37979r6yszIgujiIAU4RNMVwhuiQ6H6wQl3XI4oy4FMHcCJPHcDS6J2A2EqUQpJhohQDexSef15DBCwAAAABJRU5ErkJggg==) repeat;
+          }
+
+          .hljs-symbol,
+          .hljs-bullet,
+          .hljs-link {
+            color: #000;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAKElEQVQIW2NkQAO7d+/+z4gsBhJwdXVlhAvCBECKwIIwAbhKZBUwBQA6hBpm5efZsgAAAABJRU5ErkJggg==) repeat;
+          }
+
+          .hljs-built_in,
+          .hljs-builtin-name {
+            color: #000;
+            text-decoration: underline;
+          }
+
+          .hljs-meta {
+            color: #999;
+            font-weight: bold;
+          }
+
+          .hljs-deletion {
+            color: #fff;
+            background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAADCAYAAABS3WWCAAAAE0lEQVQIW2MMDQ39zzhz5kwIAQAyxweWgUHd1AAAAABJRU5ErkJggg==) repeat;
+          }
+
+          .hljs-addition {
+            color: #000;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAALUlEQVQYV2N89+7dfwYk8P79ewZBQUFkIQZGOiu6e/cuiptQHAPl0NtNxAQBAM97Oejj3Dg7AAAAAElFTkSuQmCC) repeat;
+          }
+
+          .hljs-emphasis {
+            font-style: italic;
+          }
+
+          .hljs-strong {
+            font-weight: bold;
           }
 
         `}</style>

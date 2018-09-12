@@ -1,6 +1,7 @@
 const next = require('next');
 const bytes = require('bytes');
 const {parse} = require('url');
+const isBot = require('is-bot');
 const LRU = require('lru-cache');
 const toBuffer = require('raw-body');
 const GitHub = require('github-api');
@@ -26,9 +27,15 @@ const gh = new GitHub({
   token: GITHUB_TOKEN
 });
 
-const toURL = ({repo, org, committish, file}) => (
-  `https://raw.githubusercontent.com/${org}/${repo}/${committish}/${file}`
+const toURL = ({repo, org, committish = 'master', file}) => (
+  `https://raw.githubusercontent.com/${encodeURIComponent(org)}/${encodeURIComponent(repo)}/${encodeURIComponent(committish)}/${encodeURI(file)}`
 );
+
+const shouldServeHTML = req => {
+  if (/html/i.test(req.headers.accept)) return true;
+  if (/(curl|wget)/i.test(req.headers['user-agent'])) return false;
+  return isBot(req.headers['user-agent']);
+};
 
 const cache = LRU({
   max: bytes('10mb'),
@@ -62,9 +69,7 @@ module.exports = async (req, res) => {
   }
 
   // If the browser is requesting the URL, then render with Next.js
-  const isHTML = /html/i.test(req.headers.accept)
-    || /twitterbot/i.test(req.headers['user-agent'])
-    || /facebookexternalhit/i.test(req.headers['user-agent']);
+  const wantsHTML = shouldServeHTML(req);
 
   // `/_next/*` is Next.js specific files, so let it handle the request
   if (/^\/_next\//.test(pathname)) {
@@ -82,20 +87,30 @@ module.exports = async (req, res) => {
 
   if (numParts === 1) {
     if (parts[0]) repo = parts[0];
-  } else if (numParts === 2) {
+  } else if (numParts >= 2) {
     if (parts[0]) org = parts[0];
     if (parts[1]) repo = parts[1];
-  } else {
-    res.statusCode = 400;
-    res.setHeader('Content-Type', 'text/plain');
-    return `Expected up to 2 slashes in the URL, but got ${numParts}\n`;
+  }
+  if (!file) {
+    file = decodeURI(parts.slice(2).join('/'));
   }
 
   // Resolve the SHA of the `committish` using the GitHub API
   let sha;
   let tree;
+  let repoDetails;
   try {
-    tree = (await gh.getRepo(org, repo).getTree(committish)).data;
+    const ghRepo = gh.getRepo(org, repo);
+    [ repoDetails, tree ] = await Promise.all([
+      ghRepo.getDetails(),
+      ghRepo.getTree(committish)
+    ]);
+    if (repoDetails.status === 200) {
+      repoDetails = repoDetails.data;
+    } else {
+      repoDetails = null;
+    }
+    tree = tree.data;
   } catch (err) {
     console.error(err);
   }
@@ -105,7 +120,7 @@ module.exports = async (req, res) => {
 
   if (!file) {
     let defaultName;
-    if (isHTML) {
+    if (wantsHTML) {
       defaultName = 'Readme.md';
     } else {
       defaultName = `${repo}.sh`;
@@ -148,11 +163,12 @@ module.exports = async (req, res) => {
     cache.set(id, cached, maxAge);
   }
 
-  if (isHTML) {
+  if (wantsHTML) {
     // Render the readme as markdown
     await appPrepare;
     params.contents = cached.body.toString('utf8');
     params.sha = sha;
+    params.repoDetails = repoDetails;
     params.defaultOrg = IMPORT_ORG;
     params.defaultRepo = IMPORT_REPO;
     app.render(req, res, '/layout', params);
@@ -172,5 +188,6 @@ function findFile(tree, name) {
             || tree.find(file => file.path === base) // basename match
             || tree.find(file => file.path.toLowerCase() === name.toLowerCase())  // case-insensitive match
             || tree.find(file => file.path.toLowerCase() === base.toLowerCase()); // case-insensitive base match
+  if (!file) return null;
   return file.path;
 }
