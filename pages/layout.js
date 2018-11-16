@@ -46,7 +46,7 @@ export default class extends React.Component {
     }
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
-      title += `@${commitish}`;
+      title += `@${committish}`;
     }
     title = title.trim();
 
