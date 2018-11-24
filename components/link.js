@@ -3,7 +3,7 @@ import { parse, resolve } from 'url';
 import Link from 'next/link';
 import parseImportPath from '../lib/parse-import-path';
 
-function MarkdownLink ({ href, org, repo, asPath, children }) {
+function MarkdownLink ({ host, href, org, repo, asPath, children }) {
   const prefix = `/${org}/${repo}`;
   const isRelative = /^\.\.?\//.test(href) && asPath.substring(0, prefix.length) !== prefix;
   if (isRelative) {
@@ -12,7 +12,13 @@ function MarkdownLink ({ href, org, repo, asPath, children }) {
   if (href.startsWith('.')) {
     href = resolve(asPath, href);
   }
-  const isImportPath = href.startsWith('/');
+  let isImportPath = href.startsWith('/');
+
+  const parsed = parse(href);
+  if (parsed.host === host) {
+    isImportPath = true;
+    href = parsed.pathname;
+  }
 
   // TODO: parse github.com URLs into import.pw URLs when appropriate
 

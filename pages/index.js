@@ -55,7 +55,7 @@ export default class extends React.Component {
       }
       params.contents = await res2.text();
       params.asPath = asPath;
-      //console.log(params);
+      params.host = req ? req.headers.host : location.host;
       return params;
     } else if (req && /json/i.test(req.headers.accept)) {
       res.setHeader('Content-Type', 'application/json');
