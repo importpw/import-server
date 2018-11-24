@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "alias": "gh.import.pw",
+  "alias": "import.pw",
   "env": {
     "GITHUB_TOKEN": "@importpw-github-access-token"
   },
