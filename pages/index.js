@@ -3,9 +3,9 @@ import fetch from 'isomorphic-fetch';
 
 // React Components
 import Head from 'next/head';
-import Link from 'next/link';
-import Markdown from 'react-markdown';
 import curry from '../components/curry';
+import HomeLink from '../components/home-link';
+import Markdown from 'react-markdown';
 import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
 import MarkdownLink from '../components/link';
@@ -28,7 +28,7 @@ const resolveOpts = {
   defaultRepo: 'import',
   token: process.env.GITHUB_TOKEN // Server-side only
 };
-console.log({ resolveOpts });
+//console.log({ resolveOpts });
 
 export default class extends React.Component {
   static async getInitialProps({ req, res, query, pathname, asPath }) {
@@ -55,7 +55,7 @@ export default class extends React.Component {
       }
       params.contents = await res2.text();
       params.asPath = asPath;
-      console.log(params);
+      //console.log(params);
       return params;
     } else if (req && /json/i.test(req.headers.accept)) {
       res.setHeader('Content-Type', 'application/json');
@@ -127,7 +127,7 @@ export default class extends React.Component {
 
         <div className="header">
           <div className="wrapper">
-            <Link href="/"><a className="logotype"><Logotype className="logotype" /></a></Link>
+            <HomeLink><Logotype className="logotype" /></HomeLink>
             {arrow}{orgLogo}
           </div>
         </div>

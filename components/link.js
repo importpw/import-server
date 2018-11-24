@@ -1,17 +1,30 @@
 import { join } from 'path';
-import Link from 'next/link';
+import { parse } from 'url';
+import { withRouter } from 'next/router';
+import parseImportPath from '../lib/parse-import-path';
 
-export default function MarkdownLink (props) {
-  const ownProps = Object.assign({}, props);
-  let { href } = ownProps;
-  delete ownProps.href;
-
-  const prefix = `/${props.org}/${props.repo}`;
-  const isRelative = /^\.\.?\//.test(href)
-    && props.asPath.substring(0, prefix.length) !== prefix;
+function MarkdownLink ({ href, router, org, repo, asPath, children }) {
+  const prefix = `/${org}/${repo}`;
+  const isRelative = /^\.\.?\//.test(href) && asPath.substring(0, prefix.length) !== prefix;
   if (isRelative) {
-    href = '/' + join(props.org, props.repo, href);
+    href = '/' + join(org, repo, href);
   }
 
-  return <Link href={href}><a>{props.children}</a></Link>;
+  // TODO: parse github.com URLs into import.pw URLs when appropriate
+
+  function handleClick (e) {
+    const { host, pathname } = parse(href);
+    const isImportPath = /^\.?\//.test(href);
+    if (isImportPath) {
+      e.preventDefault()
+      router.push({
+        pathname: '/index',
+        query: parseImportPath(pathname)
+      }, href);
+    }
+  }
+
+  return <a href={href} onClick={handleClick}>{children}</a>;
 }
+
+export default withRouter(MarkdownLink);
