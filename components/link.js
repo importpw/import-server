@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { parse } from 'url';
+import { parse, resolve } from 'url';
 import { withRouter } from 'next/router';
 import parseImportPath from '../lib/parse-import-path';
 
@@ -9,22 +9,26 @@ function MarkdownLink ({ href, router, org, repo, asPath, children }) {
   if (isRelative) {
     href = '/' + join(org, repo, href);
   }
+  if (href.startsWith('.')) {
+    href = resolve(asPath, href);
+  }
+  const isImportPath = href.startsWith('/');
 
   // TODO: parse github.com URLs into import.pw URLs when appropriate
 
-  function handleClick (e) {
-    const { host, pathname } = parse(href);
-    const isImportPath = /^\.?\//.test(href);
-    if (isImportPath) {
+  let className;
+  let handleClick;
+  if (isImportPath) {
+    handleClick = (e) => {
       e.preventDefault()
-      router.push({
-        pathname: '/index',
-        query: parseImportPath(pathname)
-      }, href);
-    }
+      const query = parseImportPath(href);
+      router.push({ pathname: '/index', query }, href);
+    };
+  } else {
+    className = 'external';
   }
 
-  return <a href={href} onClick={handleClick}>{children}</a>;
+  return <a href={href} className={className} onClick={handleClick}>{children}</a>;
 }
 
 export default withRouter(MarkdownLink);

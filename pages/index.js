@@ -94,10 +94,13 @@ export default class extends React.Component {
     }
     title = title.trim();
 
+    const link = curry(MarkdownLink, this.props);
     const renderers = {
       code: MarkdownCode,
       image: MarkdownImage,
-      link: curry(MarkdownLink, this.props),
+      imageReference: MarkdownImage,
+      link,
+      linkReference: link,
       text: MarkdownText
     };
 
