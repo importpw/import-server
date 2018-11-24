@@ -1,19 +1,22 @@
 import Link from 'next/link';
 import Cry from './icons/cry';
 import ObjectInspector from 'react-object-inspector';
+import parseImportPath from '../lib/parse-import-path';
 
 export default (props) => {
   const { org, repo, fetch, committish, host, foundRepo, foundCommit, foundEntrypoint, foundReadme } = props;
   const repoFull = `${org}/${repo}`;
   const reasons = [];
   if (!foundRepo) {
+    const as = '/importpw/import/docs/authentication.md';
+    const query = parseImportPath(as);
     reasons.push(
       <p key="repo">
         <h4>The repository <code>{repoFull}</code> is not accessible</h4>
         There are two possibilites:
         <ul>
           <li>The repo does not exist - Please ensure that the repo name is correct.</li>
-          <li>The repo is private - The docs won't be rendered by <code>{host}</code>, but you may still use the <code>import</code> command. See the <Link href={{ pathname: '/index', query: { file: 'docs/authentication.md' } }} as={as}><a>Authentication</a></Link> page for details.</li>
+          <li>The repo is private - The docs won't be rendered by <code>{host}</code>, but you may still use the <code>import</code> command. See the <Link href={{ pathname: '/index', query }} as={as}><a>Authentication</a></Link> page for details.</li>
         </ul>
       </p>
     );
