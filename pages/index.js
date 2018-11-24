@@ -20,6 +20,7 @@ import Logotype from '../components/icons/import';
 // Resolution logic
 import redirect from '../lib/redirect';
 import resolveImport from '../lib/resolve';
+import toURL from '../lib/to-github-raw-url';
 import parseCommittish from '../lib/parse-committish';
 import shouldServeHTML from '../lib/should-serve-html';
 
@@ -28,8 +29,14 @@ const resolveOpts = {
   defaultRepo: 'import',
   token: process.env.GITHUB_TOKEN // Server-side only
 };
-//console.log({ resolveOpts });
 
+/**
+ * `query` spec - all fields are optional:
+ *   - org - user or organization that owns the repo
+ *   - repo - repository name
+ *   - file - file name to load
+ *   - committish - commit ref / tag / branch
+ */
 export default class extends React.Component {
   static async getInitialProps({ req, res, query, pathname, asPath }) {
     parseCommittish(query);
@@ -39,14 +46,20 @@ export default class extends React.Component {
       return redirect(res, favicon);
     }
 
-    // If the browser is requesting the URL, then render with Next.js,
-    // otherwise serve the raw file contents
-    query.renderReadme = shouldServeHTML(req);
-
     const params = await resolveImport(query, resolveOpts);
 
-    if (query.renderReadme) {
-      const res2 = await fetch(params.url);
+    // Return a JSON representation if `Accept: application/json` is present
+    if (req && /json/i.test(req.headers.accept)) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(params));
+      return;
+    }
+
+    if (shouldServeHTML(req)) {
+      // If the browser is requesting the URL, then render with Next.js
+      const url = toURL({ ...params, file: params.readme || params.file });
+      console.log({ url });
+      const res2 = await fetch(url);
       if (!res2.ok) {
         // If the asset was 404, then it's possibly a private repo.
         // Redirect to the URL that 404'd and let `curl --netrc` give it a go.
@@ -57,11 +70,10 @@ export default class extends React.Component {
       params.asPath = asPath;
       params.host = req ? req.headers.host : location.host;
       return params;
-    } else if (req && /json/i.test(req.headers.accept)) {
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(params));
     } else {
-      return redirect(res, params.url);
+      // Otherwise redirect to the raw resource, for the `import` command case
+      const url = toURL({ ...params, file: params.entrypoint || params.file });
+      return redirect(res, url);
     }
   }
 
@@ -70,8 +82,7 @@ export default class extends React.Component {
   }
 
   render() {
-    const {contents, org, repo, repoDetails, committish} = this.props;
-    const description = (repoDetails || {}).description;
+    const {contents, foundReadme, org, repo, repoDescription, committish} = this.props;
     const avatar = `https://github.com/${org}.png`;
     let arrow;
     let orgLogo;
@@ -120,11 +131,11 @@ export default class extends React.Component {
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:image" content={ogImageUrl} />
           <meta name="twitter:title" content={title} />
-          <meta name="twitter:description" content={description} />
+          <meta name="twitter:description" content={repoDescription} />
           <meta property="og:image" content={ogImageUrl} />
           <meta property="og:url" content="https://import.pw" />
           <meta property="og:title" content={title} />
-          <meta property="og:description" content={description} />
+          <meta property="og:description" content={repoDescription} />
           <meta property="og:type" content="website" />
         </Head>
 
