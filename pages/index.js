@@ -91,6 +91,7 @@ export default class extends React.Component {
       repo,
       repoDescription,
       committish,
+      foundEntrypoint,
       fetch: { statusCode, body }
     } = this.props;
 
@@ -117,7 +118,7 @@ export default class extends React.Component {
     title = title.trim();
 
     let content;
-    if (statusCode === 200) {
+    if (statusCode === 200 && (typeof foundEntrypoint !== 'boolean' || foundEntrypoint)) {
       const link = curry(MarkdownLink, this.props);
       const renderers = {
         code: MarkdownCode,
@@ -529,11 +530,6 @@ export default class extends React.Component {
           .hljs-strong {
             font-weight: bold;
           }
-
-          a.external {
-            text-decoration: underline;
-          }
-
         `}</style>
       </div>
     )
