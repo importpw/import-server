@@ -5,6 +5,7 @@ import fetch from 'isomorphic-fetch';
 import Link from 'next/link';
 import Head from 'next/head';
 import curry from '../components/curry';
+import NoDocs from '../components/no-docs';
 import Markdown from 'react-markdown';
 import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
@@ -38,7 +39,7 @@ const resolveOpts = {
  *   - committish - commit ref / tag / branch
  */
 export default class extends React.Component {
-  static async getInitialProps({ req, res, query, pathname, asPath }) {
+  static async getInitialProps({ req, res, query, asPath }) {
     parseCommittish(query);
 
     if (query.repo === 'favicon.ico') {
@@ -47,33 +48,35 @@ export default class extends React.Component {
     }
 
     const params = await resolveImport(query, resolveOpts);
+    params.asPath = asPath;
+    params.host = req ? req.headers.host : location.host;
 
-    // Return a JSON representation if `Accept: application/json` is present
-    if (req && /json/i.test(req.headers.accept)) {
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(params));
-      return;
+    const wantsHTML = shouldServeHTML(req);
+    if (wantsHTML || query.fetch || (req && req.headers['x-fetch'])) {
+      const url = toURL({ ...params, file: params.readme || params.file });
+      const res2 = await fetch(url);
+      params.fetch = {
+        url: res2.url,
+        statusCode: res2.status,
+        //headers: [...res2.headers],
+        body: await res2.text()
+      };
+      if (res) {
+        res.statusCode = res2.status;
+      }
     }
 
-    if (shouldServeHTML(req)) {
+    if (wantsHTML) {
       // If the browser is requesting the URL, then render with Next.js
-      const url = toURL({ ...params, file: params.readme || params.file });
-      console.log({ url });
-      const res2 = await fetch(url);
-      if (!res2.ok) {
-        // If the asset was 404, then it's possibly a private repo.
-        // Redirect to the URL that 404'd and let `curl --netrc` give it a go.
-        // TODO: render not found page and link to Authentication page
-        return redirect(res, res2.url);
-      }
-      params.contents = await res2.text();
-      params.asPath = asPath;
-      params.host = req ? req.headers.host : location.host;
       return params;
+    } else if (req && /json/i.test(req.headers.accept)) {
+      // Return a JSON representation if `Accept: application/json` is present
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(params));
     } else {
       // Otherwise redirect to the raw resource, for the `import` command case
       const url = toURL({ ...params, file: params.entrypoint || params.file });
-      return redirect(res, url);
+      redirect(res, url);
     }
   }
 
@@ -82,7 +85,15 @@ export default class extends React.Component {
   }
 
   render() {
-    const {contents, foundReadme, org, repo, repoDescription, committish} = this.props;
+    const {
+      host,
+      org,
+      repo,
+      repoDescription,
+      committish,
+      fetch: { statusCode, body }
+    } = this.props;
+
     const avatar = `https://github.com/${org}.png`;
     let arrow;
     let orgLogo;
@@ -105,22 +116,28 @@ export default class extends React.Component {
     }
     title = title.trim();
 
-    const link = curry(MarkdownLink, this.props);
-    const renderers = {
-      code: MarkdownCode,
-      image: MarkdownImage,
-      imageReference: MarkdownImage,
-      link,
-      linkReference: link,
-      text: MarkdownText
-    };
-
-    const markdown = <Markdown
-      className="markdown"
-      escapeHtml={false}
-      source={contents}
-      renderers={renderers}
-    />;
+    let content;
+    if (statusCode === 200) {
+      const link = curry(MarkdownLink, this.props);
+      const renderers = {
+        code: MarkdownCode,
+        image: MarkdownImage,
+        imageReference: MarkdownImage,
+        link,
+        linkReference: link,
+        text: MarkdownText
+      };
+      content = (
+        <Markdown
+          className="markdown"
+          escapeHtml={false}
+          source={body}
+          renderers={renderers}
+        />
+      );
+    } else {
+      content = <NoDocs {...this.props} />;
+    }
 
     return (
       <div className="root">
@@ -133,7 +150,7 @@ export default class extends React.Component {
           <meta name="twitter:title" content={title} />
           <meta name="twitter:description" content={repoDescription} />
           <meta property="og:image" content={ogImageUrl} />
-          <meta property="og:url" content="https://import.pw" />
+          <meta property="og:url" content={`https://${host}`} />
           <meta property="og:title" content={title} />
           <meta property="og:description" content={repoDescription} />
           <meta property="og:type" content="website" />
@@ -146,9 +163,7 @@ export default class extends React.Component {
           </div>
         </div>
 
-        <div className="content">
-          {markdown}
-        </div>
+        <div className="content">{content}</div>
 
         <div className="footer">
           <div className="wrapper">
@@ -513,6 +528,10 @@ export default class extends React.Component {
 
           .hljs-strong {
             font-weight: bold;
+          }
+
+          a.external {
+            text-decoration: underline;
           }
 
         `}</style>
