@@ -1,12 +1,15 @@
+// Dependencies
+import fetch from 'isomorphic-fetch';
+
+// React Components
 import Head from 'next/head';
 import Link from 'next/link';
 import Markdown from 'react-markdown';
+import curry from '../components/curry';
 import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
 import MarkdownLink from '../components/link';
 import MarkdownText from '../components/text';
-
-import curry from '../components/curry';
 
 // Icons
 import Zeit from '../components/icons/zeit';
@@ -14,11 +17,52 @@ import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
 import Logotype from '../components/icons/import';
 
+// Resolution logic
+import redirect from '../lib/redirect';
+import resolveImport from '../lib/resolve';
+import parseCommittish from '../lib/parse-committish';
+import shouldServeHTML from '../lib/should-serve-html';
+
+const resolveOpts = {
+  defaultOrg: 'importpw',
+  defaultRepo: 'import',
+  token: process.env.GITHUB_TOKEN // Server-side only
+};
+console.log({ resolveOpts });
+
 export default class extends React.Component {
-  static async getInitialProps(context) {
-    return Object.assign({}, context.query, {
-      pathname: context.asPath
-    });
+  static async getInitialProps({ req, res, query, pathname, asPath }) {
+    parseCommittish(query);
+
+    if (query.repo === 'favicon.ico') {
+      const favicon = `https://github.com/${query.org || resolveOpts.defaultOrg}.png`;
+      return redirect(res, favicon);
+    }
+
+    // If the browser is requesting the URL, then render with Next.js,
+    // otherwise serve the raw file contents
+    query.renderReadme = shouldServeHTML(req);
+
+    const params = await resolveImport(query, resolveOpts);
+
+    if (query.renderReadme) {
+      const res2 = await fetch(params.url);
+      if (!res2.ok) {
+        // If the asset was 404, then it's possibly a private repo.
+        // Redirect to the URL that 404'd and let `curl --netrc` give it a go.
+        // TODO: render not found page and link to Authentication page
+        return redirect(res, res2.url);
+      }
+      params.contents = await res2.text();
+      params.asPath = asPath;
+      console.log(params);
+      return params;
+    } else if (req && /json/i.test(req.headers.accept)) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(params));
+    } else {
+      return redirect(res, params.url);
+    }
   }
 
   componentDidMount() {
@@ -26,7 +70,7 @@ export default class extends React.Component {
   }
 
   render() {
-    const {defaultOrg, defaultRepo, contents, org, repo, repoDetails, committish} = this.props;
+    const {contents, org, repo, repoDetails, committish} = this.props;
     const description = (repoDetails || {}).description;
     const avatar = `https://github.com/${org}.png`;
     let arrow;
@@ -34,13 +78,13 @@ export default class extends React.Component {
     let ghUrl = `https://github.com/${org}/${repo}`;
     let title = 'import ';
     let ogImageUrl = 'https://og.import.pw/';
-    if (defaultOrg !== org) {
+    if (resolveOpts.defaultOrg !== org) {
       arrow = <Arrow className="arrow" />;
       orgLogo = <img className="avatar logo" src={avatar} />;
       title += `${org}/`;
       ogImageUrl += encodeURIComponent(org) + '/';
     }
-    if (defaultRepo !== repo) {
+    if (resolveOpts.defaultRepo !== repo) {
       title += repo;
       ogImageUrl += encodeURIComponent(repo);
     }

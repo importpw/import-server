@@ -1,11 +1,16 @@
 {
-  "type": "docker",
-  "public": true,
+  "version": 2,
   "alias": "gh.import.pw",
-  "features": {
-    "cloud": "v2"
-  },
   "env": {
     "GITHUB_TOKEN": "@importpw-github-access-token"
-  }
+  },
+  "builds": [
+    { "src": "package.json", "use": "@now/next", "config": { "maxLambdaSize": "10mb" } }
+  ],
+  "routes": [
+    { "src": "/_next/(.*)", "dest": "/_next/$1" },
+    { "src": "^/([^/]*)$", "dest": "/index?repo=$1" },
+    { "src": "^/([^/]*)/([^/]*)$", "dest": "/index?org=$1&repo=$2" },
+    { "src": "^/([^/]*)/([^/]*)(/(.*))?$", "dest": "/index?org=$1&repo=$2&file=$4" }
+  ]
 }

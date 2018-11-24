@@ -8,7 +8,7 @@ export default function MarkdownLink (props) {
 
   const prefix = `/${props.org}/${props.repo}`;
   const isRelative = /^\.\.?\//.test(href)
-    && props.pathname.substring(0, prefix.length) !== prefix;
+    && props.asPath.substring(0, prefix.length) !== prefix;
   if (isRelative) {
     href = '/' + join(props.org, props.repo, href);
   }
