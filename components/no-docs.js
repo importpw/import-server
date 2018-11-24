@@ -4,7 +4,20 @@ import ObjectInspector from 'react-object-inspector';
 import parseImportPath from '../lib/parse-import-path';
 
 export default (props) => {
-  const { org, repo, fetch, entrypoint, committish, host, foundRepo, foundCommit, foundEntrypoint, foundReadme } = props;
+  const {
+    org,
+    repo,
+    file,
+    host,
+    fetch,
+    entrypoint,
+    committish,
+    foundRepo,
+    foundCommit,
+    foundFile,
+    foundEntrypoint,
+    foundReadme
+  } = props;
   const repoFull = `${org}/${repo}`;
   const reasons = [];
   if (!foundRepo) {
@@ -49,6 +62,17 @@ export default (props) => {
           <h4>The repository <code>{repoFull}</code> does not contain a Readme file</h4>
           <ul>
             <li>Add a Markdown file named <code>Readme.md</code> to the root of the repository to render the docs on <code>{host}</code>.</li>
+          </ul>
+        </p>
+      );
+    }
+
+    if (typeof foundFile === 'boolean' && !foundFile) {
+      reasons.push(
+        <p key="file">
+          <h4>The repository <code>{repoFull}</code> does not have the file <code>{file}</code></h4>
+          <ul>
+            <li>Please ensure the URL is correct, and points to a file that exists in the repository.</li>
           </ul>
         </p>
       );
