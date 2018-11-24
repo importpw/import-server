@@ -2,9 +2,9 @@
 import fetch from 'isomorphic-fetch';
 
 // React Components
+import Link from 'next/link';
 import Head from 'next/head';
 import curry from '../components/curry';
-import HomeLink from '../components/home-link';
 import Markdown from 'react-markdown';
 import MarkdownCode from '../components/code';
 import MarkdownImage from '../components/image';
@@ -130,7 +130,7 @@ export default class extends React.Component {
 
         <div className="header">
           <div className="wrapper">
-            <HomeLink><Logotype className="logotype" /></HomeLink>
+            <Link href="/index" as="/"><a><Logotype className="logotype" /></a></Link>
             {arrow}{orgLogo}
           </div>
         </div>
