@@ -4,7 +4,7 @@ import ObjectInspector from 'react-object-inspector';
 import parseImportPath from '../lib/parse-import-path';
 
 export default (props) => {
-  const { org, repo, fetch, committish, host, foundRepo, foundCommit, foundEntrypoint, foundReadme } = props;
+  const { org, repo, fetch, entrypoint, committish, host, foundRepo, foundCommit, foundEntrypoint, foundReadme } = props;
   const repoFull = `${org}/${repo}`;
   const reasons = [];
   if (!foundRepo) {
@@ -37,7 +37,7 @@ export default (props) => {
         <p key="entrypoint">
           <h4>The repository <code>{repoFull}</code> is not <em>import-compatible</em></h4>
           <ul>
-            <li>Add a shell script named <code>{`${repo}.sh`}</code> to the root of the repository to make it compatible with <code>import</code>.</li>
+            <li>Add a shell script named <code>{entrypoint}</code> to the root of the repository to make it compatible with <code>import</code>.</li>
           </ul>
         </p>
       );
