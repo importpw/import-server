@@ -303,6 +303,10 @@ export default class extends React.Component {
             line-height: 20px;
           }
 
+          a code {
+            color: #0076FF;
+          }
+
           td {
             font-size: 14px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;

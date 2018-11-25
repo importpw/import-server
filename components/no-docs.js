@@ -113,7 +113,7 @@ export default (props) => {
         .top h3 {
           margin: 0;
           padding: 0;
-          font-weight: 300;
+          font-weight: 350;
         }
       `}</style>
     </div>
