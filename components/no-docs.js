@@ -57,11 +57,17 @@ export default (props) => {
     }
 
     if (typeof foundReadme === 'boolean' && !foundReadme) {
+      let hasEntrypoint;
+      if (foundEntrypoint) {
+        const entrypointGhBlob = `https://github.com/${repoFull}/blob/${committish}/${entrypoint}`;
+        hasEntrypoint = <li>The entrypoint <a href={entrypointGhBlob}><code>{entrypoint}</code></a> exists, so <code>import {repoFull}</code> <em>will work</em>.</li>;
+      }
       reasons.push(
         <p key="readme">
           <h4>The repository <code>{repoFull}</code> does not contain a Readme file</h4>
           <ul>
             <li>Add a Markdown file named <code>Readme.md</code> to the root of the repository to render the docs on <code>{host}</code>.</li>
+            {hasEntrypoint}
           </ul>
         </p>
       );
