@@ -17,7 +17,7 @@
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-markdown": "^3.4.1",
-    "react-new-window": "0.0.7",
+    "react-new-window": "0.0.10",
     "react-object-inspector": "^0.2.1",
     "react-syntax-highlighter": "^8.0.1",
     "xterm": "^3.6.0"
