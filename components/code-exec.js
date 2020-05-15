@@ -17,6 +17,7 @@ export default class extends React.Component {
 			body: code
 		});
 		const body = await res.text();
+		console.log(res.headers);
 		term.write(body.replace(/\n/g, '\r\n'));
 	}
 
