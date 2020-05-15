@@ -12,24 +12,31 @@ import {
 	close
 } from 'fs-extra';
 
+const isDev = process.env.VERCEL_REGION === 'dev1';
+console.log(process.env);
+console.log({ isDev });
+
+async function download(url: string, dest: string) {
+	const res = await fetch(url);
+	const ws = createWriteStream(dest, { mode: 0o777 });
+	res.body.pipe(ws);
+	await once(ws, 'close');
+}
+
 const importBinPath = (async () => {
 	const dir = join(tmpdir(), Math.random().toString(32).slice(2));
 	await mkdirp(dir);
 
-	const res = await fetch('https://import.pw');
-	const ws = createWriteStream(join(dir, 'import'), {
-		mode: 0o777
-	});
-	res.body.pipe(ws);
-	await once(ws, 'close');
+	const ops = [];
+	ops.push(download('https://import.pw', join(dir, 'import')));
 
-	const curl = await fetch('https://github.com/dtschan/curl-static/releases/download/v7.63.0/curl');
-	const ws2 = createWriteStream(join(dir, 'curl'), {
-		mode: 0o777
-	});
-	curl.body.pipe(ws2);
-	await once(ws2, 'close');
+	if (!isDev) {
+		// In AWS Lambda, there is no `curl` command,
+		// so download this static binary
+		ops.push(download('https://github.com/dtschan/curl-static/releases/download/v7.63.0/curl', join(dir, 'curl')));
+	}
 
+	await ops;
 	return dir;
 })();
 
@@ -49,11 +56,19 @@ export default async function (req, res) {
 
 		const outputFile = join(workPath, '.output');
 		const fd = await open(outputFile, 'w');
+
+		// The static `curl` binary we download for AWS Lambda has the incorrect
+		// location for the SSL Certs CA, so set the proper location in prod.
+		let CURL_CA_BUNDLE = '/etc/ssl/certs/ca-bundle.crt';
+		if (isDev) {
+			CURL_CA_BUNDLE = undefined;
+		}
+
 		const proc = execa(inputFile, [], {
 			env: {
 				...process.env,
 				PATH: `${process.env.PATH}:${await importBinPath}`,
-				CURL_CA_BUNDLE: '/etc/ssl/certs/ca-bundle.crt',
+				CURL_CA_BUNDLE,
 				IMPORT_CACHE: workPath
 			},
 			reject: false,
