@@ -36,7 +36,7 @@ const importBinPath = (async () => {
 		ops.push(download('https://github.com/dtschan/curl-static/releases/download/v7.63.0/curl', join(dir, 'curl')));
 	}
 
-	await ops;
+	await Promise.all(ops);
 	return dir;
 })();
 
