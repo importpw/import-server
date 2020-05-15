@@ -10,7 +10,7 @@ export default class extends React.Component {
 	async componentDidMount() {
 		const { code } = this.props;
 		const { term } = this.refs.xterm;
-		term.write('$ Running...\r\n');
+		term.write('\u001b[32m\u001b[1m$\u001b[22m\u001b[39m \u001b[3mRunning...\u001b[23m\r\n');
 
 		const res = await fetch('/api/exec', {
 			method: 'POST',
