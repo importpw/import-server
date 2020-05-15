@@ -21,7 +21,7 @@ export default class extends React.Component {
 
 		const exitCode = parseInt(res.headers.get('x-exit-code'), 10);
 		if (exitCode !== 0) {
-			term.write(`Script failed with exit code ${exitCode}\r\n`);
+			term.write(`\u001b[31mScript failed with exit code ${exitCode}\u001b[39m\r\n`);
 		}
 	}
 
