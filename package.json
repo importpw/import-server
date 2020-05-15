@@ -4,6 +4,10 @@
   "description": "Redirects to GitHub repo raw URLs for use with `import`",
   "author": "Nathan Rajlich <n@n8.io>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/importpw/import-server.git"
+  },
   "scripts": {
     "build": "next build"
   },
