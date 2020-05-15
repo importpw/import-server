@@ -3,6 +3,7 @@ const { parse } = require('url');
 const fetch = require('node-fetch');
 const { createCanvas, loadImage, registerFont } = require('canvas');
 
+// Hack to get the libuuid, etc. included in the serverless function
 console.log(fs.readdirSync(__dirname + '/../../../lib'));
 
 /* Load Archivo font */
@@ -115,8 +116,8 @@ async function handler (req, res) {
   ctx.fillText(repo, titleX, titleY);
 
   res.setHeader('Content-Type', 'image/png');
+  res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
   canvas.createPNGStream().pipe(res);
 }
 
-//module.exports = (req, res) => run(req, res, handler);
 module.exports = handler;
