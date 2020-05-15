@@ -23,6 +23,13 @@ const importBinPath = (async () => {
 	res.body.pipe(ws);
 	await once(ws, 'close');
 
+	const curl = await fetch('https://github.com/dtschan/curl-static/releases/download/v7.63.0/curl');
+	const ws2 = createWriteStream(join(dir, 'curl'), {
+		mode: 0o777
+	});
+	curl.body.pipe(ws2);
+	await once(ws2, 'close');
+
 	return dir;
 })();
 
@@ -45,7 +52,7 @@ export default async function (req, res) {
 		const proc = execa(inputFile, [], {
 			env: {
 				...process.env,
-				PATH: `${await importBinPath}:${process.env.PATH}`,
+				PATH: `${process.env.PATH}:${await importBinPath}`,
 				IMPORT_CACHE: workPath
 			},
 			reject: false,
