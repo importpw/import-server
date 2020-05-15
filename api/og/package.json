@@ -1,0 +1,10 @@
+{
+  "description": "Dynamically generated Open Graph card for `import`",
+  "scripts": {
+    "now-build": "cd ../../ && curl -sfLS \"https://github.com/jwerre/node-canvas-lambda/blob/master/canvas-lib64-layer.zip?raw=true\" > lib.zip && unzip lib.zip && rm lib.zip"
+  },
+  "dependencies": {
+    "canvas": "^2.6.1",
+    "node-fetch": "^2.6.0"
+  }
+}

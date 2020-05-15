@@ -4,6 +4,7 @@
     "GITHUB_TOKEN": "@importpw-github-access-token"
   },
   "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/_next/(.*)", "dest": "/_next/$1" },
     { "src": "^/([^/]*)$", "dest": "/index?repo=$1" },
     { "src": "^/([^/]*)/([^/]*)$", "dest": "/index?org=$1&repo=$2" },
