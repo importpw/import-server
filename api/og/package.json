@@ -1,5 +1,7 @@
 {
   "description": "Dynamically generated Open Graph card for `import`",
+  "author": "Nathan Rajlich <n@n8.io>",
+  "license": "MIT",
   "scripts": {
     "now-build": "cd ../../ && curl -sfLS \"https://github.com/jwerre/node-canvas-lambda/blob/master/canvas-lib64-layer.zip?raw=true\" > lib.zip && unzip -o lib.zip && rm lib.zip"
   },
