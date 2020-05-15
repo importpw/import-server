@@ -5,19 +5,19 @@
   "author": "Nathan Rajlich <n@n8.io>",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev"
+    "build": "next build"
   },
   "dependencies": {
     "emoji-dictionary": "^1.0.9",
     "github-api": "^3.0.0",
     "is-bot": "0.0.1",
     "isomorphic-fetch": "^2.2.1",
-    "next": "^7.0.2",
+    "next": "^9.4.0",
     "parse-github-url": "^1.0.2",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-markdown": "^3.4.1",
-    "react-new-window": "0.0.10",
+    "react-new-window": "0.1.2",
     "react-object-inspector": "^0.2.1",
     "react-syntax-highlighter": "^8.0.1",
     "xterm": "^3.6.0"

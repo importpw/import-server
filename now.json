@@ -1,12 +1,8 @@
 {
   "version": 2,
-  "alias": "import.pw",
   "env": {
     "GITHUB_TOKEN": "@importpw-github-access-token"
   },
-  "builds": [
-    { "src": "package.json", "use": "@now/next", "config": { "maxLambdaSize": "10mb" } }
-  ],
   "routes": [
     { "src": "/_next/(.*)", "dest": "/_next/$1" },
     { "src": "^/([^/]*)$", "dest": "/index?repo=$1" },
