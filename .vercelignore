@@ -1,4 +1,4 @@
 node_modules
 /.next
-/lib
 /lib.zip
+/lib/*.so*
