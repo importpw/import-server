@@ -12,17 +12,10 @@ export default class extends React.Component {
 		const { term } = this.refs.xterm;
 		term.write('$ Running...\r\n');
 
-		const bootstrap =
-			'dir="$(mktemp -d)"; trap "rm -rf $dir" EXIT TERM INT; cat > "$dir/script" && chmod +x "$dir/script" && IMPORT_CACHE="$dir" "$dir/script" 2>&1';
-		const res = await fetch(
-			`https://exec.import.pw/sh?arg=-c&arg=${encodeURIComponent(
-				bootstrap
-			)}`,
-			{
-				method: 'POST',
-				body: code
-			}
-		);
+		const res = await fetch('/api/exec', {
+			method: 'POST',
+			body: code
+		});
 		const body = await res.text();
 		term.write(body.replace(/\n/g, '\r\n'));
 	}

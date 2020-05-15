@@ -1,0 +1,15 @@
+{
+  "description": "API endpoint that executes arbitrary Bash code with `import`",
+  "author": "Nathan Rajlich <n@n8.io>",
+  "license": "MIT",
+  "dependencies": {
+    "@tootallnate/once": "^1.1.2",
+    "execa": "^4.0.1",
+    "fs-extra": "^9.0.0",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.0",
+    "@types/node": "^14.0.1"
+  }
+}
