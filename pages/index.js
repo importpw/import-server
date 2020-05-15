@@ -49,7 +49,19 @@ export default class extends React.Component {
 
     const params = await resolveImport(query, resolveOpts);
     params.asPath = asPath;
-    params.host = req ? req.headers.host : location.host;
+
+    if (req) {
+      // Server-side render
+      params.host = req.headers['x-forwarded-host'] || req.headers.host;
+      params.proto = req.headers['x-forwarded-proto'] || 'https';
+    } else {
+      // Client-side render
+      params.host = location.host;
+      params.proto = location.protocol;
+    }
+    if (!params.proto.endsWith(':')) {
+      params.proto += ':';
+    }
 
     const wantsHTML = shouldServeHTML(req);
     if (wantsHTML || query.fetch || (req && req.headers['x-fetch'])) {
@@ -87,6 +99,7 @@ export default class extends React.Component {
   render() {
     const {
       host,
+      proto,
       org,
       repo,
       repoDescription,
@@ -98,18 +111,16 @@ export default class extends React.Component {
     const avatar = `https://github.com/${org}.png`;
     let arrow;
     let orgLogo;
-    let ghUrl = `https://github.com/${org}/${repo}`;
+    let ghUrl = `https://github.com/${encodeURIComponent(org)}/${encodeURIComponent(repo)}`;
     let title = 'import ';
-    let ogImageUrl = 'https://og.import.pw/';
+    const ogImageUrl = `${proto}//${host}/api/og/${encodeURIComponent(org)}/${encodeURIComponent(repo)}`;
     if (resolveOpts.defaultOrg !== org) {
       arrow = <Arrow className="arrow" />;
       orgLogo = <img className="avatar logo" src={avatar} />;
       title += `${org}/`;
-      ogImageUrl += encodeURIComponent(org) + '/';
     }
     if (resolveOpts.defaultRepo !== repo) {
       title += repo;
-      ogImageUrl += encodeURIComponent(repo);
     }
     if (committish !== 'master') {
       ghUrl += `/tree/${committish}`;
@@ -151,7 +162,7 @@ export default class extends React.Component {
           <meta name="twitter:title" content={title} />
           <meta name="twitter:description" content={repoDescription} />
           <meta property="og:image" content={ogImageUrl} />
-          <meta property="og:url" content={`https://${host}`} />
+          <meta property="og:url" content={`${proto}//${host}`} />
           <meta property="og:title" content={title} />
           <meta property="og:description" content={repoDescription} />
           <meta property="og:type" content="website" />
