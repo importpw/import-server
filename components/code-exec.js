@@ -17,8 +17,12 @@ export default class extends React.Component {
 			body: code
 		});
 		const body = await res.text();
-		console.log(res.headers);
 		term.write(body.replace(/\n/g, '\r\n'));
+
+		const exitCode = parseInt(res.headers.get('x-exit-code'), 10);
+		if (exitCode !== 0) {
+			term.write(`Script failed with exit code ${exitCode}\r\n`);
+		}
 	}
 
 	render() {
