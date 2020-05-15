@@ -20,6 +20,6 @@
     "react-new-window": "0.1.2",
     "react-object-inspector": "^0.2.1",
     "react-syntax-highlighter": "^8.0.1",
-    "xterm": "^3.6.0"
+    "xterm": "^3.8.1"
   }
 }
