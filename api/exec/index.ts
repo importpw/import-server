@@ -53,6 +53,7 @@ export default async function (req, res) {
 			env: {
 				...process.env,
 				PATH: `${process.env.PATH}:${await importBinPath}`,
+				CURL_CA_BUNDLE: '/etc/ssl/certs/ca-bundle.crt',
 				IMPORT_CACHE: workPath
 			},
 			reject: false,
