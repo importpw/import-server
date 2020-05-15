@@ -1,5 +1,5 @@
 {
-  "name": "import.pw-server",
+  "name": "import-server",
   "version": "1.0.0",
   "description": "Redirects to GitHub repo raw URLs for use with `import`",
   "author": "Nathan Rajlich <n@n8.io>",
