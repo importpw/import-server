@@ -57,20 +57,21 @@ export default async function (req, res) {
 		const outputFile = join(workPath, '.output');
 		const fd = await open(outputFile, 'w');
 
+		const env = {
+			...process.env,
+			PATH: `${process.env.PATH}:${await importBinPath}`,
+			CURL_CA_BUNDLE: '/etc/ssl/certs/ca-bundle.crt',
+			IMPORT_CACHE: workPath
+		};
+
 		// The static `curl` binary we download for AWS Lambda has the incorrect
 		// location for the SSL Certs CA, so set the proper location in prod.
-		let CURL_CA_BUNDLE = '/etc/ssl/certs/ca-bundle.crt';
 		if (isDev) {
-			CURL_CA_BUNDLE = undefined;
+			delete env.CURL_CA_BUNDLE;
 		}
 
 		const proc = execa(inputFile, [], {
-			env: {
-				...process.env,
-				PATH: `${process.env.PATH}:${await importBinPath}`,
-				CURL_CA_BUNDLE,
-				IMPORT_CACHE: workPath
-			},
+			env,
 			reject: false,
 			stdio: ['ignore', fd, fd]
 		});
