@@ -1,16 +1,20 @@
-import { tmpdir } from 'os';
-import { join } from 'path';
+import execa from 'execa';
 import fetch from 'node-fetch';
-import { spawn } from 'node-pty';
-import { EventEmitter } from 'events';
+import { join } from 'path';
+import { tmpdir } from 'os';
 import once from '@tootallnate/once';
 import {
 	createWriteStream,
+	createReadStream,
 	mkdirp,
 	remove,
+	open,
+	close
 } from 'fs-extra';
 
 const isDev = process.env.VERCEL_REGION === 'dev1';
+console.log(process.env);
+console.log({ isDev });
 
 async function download(url: string, dest: string) {
 	const res = await fetch(url);
@@ -50,40 +54,34 @@ export default async function (req, res) {
 		req.pipe(ws);
 		await once(ws, 'close');
 
-		const env = {
-			...process.env,
-			PATH: `${process.env.PATH}:${await importBinPath}`,
-			// The static `curl` binary we download for AWS Lambda has the
-			// incorrect location for the SSL Certs CA, so set the proper
-			// location in prod.
-			CURL_CA_BUNDLE: '/etc/ssl/certs/ca-bundle.crt',
-			IMPORT_CACHE: workPath
-		};
+		const outputFile = join(workPath, '.output');
+		const fd = await open(outputFile, 'w');
 
+		// The static `curl` binary we download for AWS Lambda has the incorrect
+		// location for the SSL Certs CA, so set the proper location in prod.
+		let CURL_CA_BUNDLE = '/etc/ssl/certs/ca-bundle.crt';
 		if (isDev) {
-			delete env.CURL_CA_BUNDLE;
+			CURL_CA_BUNDLE = undefined;
 		}
 
-		const proc = spawn(inputFile, [], {
-			cols: 80,
-			rows: 30,
-			env
+		const proc = execa(inputFile, [], {
+			env: {
+				...process.env,
+				PATH: `${process.env.PATH}:${await importBinPath}`,
+				CURL_CA_BUNDLE,
+				IMPORT_CACHE: workPath
+			},
+			reject: false,
+			stdio: ['ignore', fd, fd]
 		});
-		const result: string[] = [];
-		proc.on('data', (data) => {
-			result.push(data);
-		});
-		// The `node-pty` types don't properly extend `EventEmitter`,
-		// so manually case here.
-		const onEnd = once(proc as unknown as EventEmitter, 'end');
-		const [exitCode, signal] = await once.spread<[ number, number ]>(proc as unknown as EventEmitter, 'exit');
-		await onEnd;
+		const result = await proc;
+		await close(fd);
 
 		res.setHeader('Access-Control-Allow-Origin', '*');
 		res.setHeader('Content-Type', 'text/plain; charset=utf8');
-		res.setHeader('X-Exit-Code', String(exitCode));
-		res.setHeader('X-Exit-Signal', String(signal));
-		res.end(result.join(''));
+		res.setHeader('X-Exit-Code', String(result.exitCode));
+		createReadStream(outputFile).pipe(res);
+		await once(res, 'close');
 	} finally {
 		process.chdir(origCwd);
 		await remove(workPath);
