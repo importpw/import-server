@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "public": true,
   "env": {
     "GITHUB_TOKEN": "@importpw-github-access-token"
   },
