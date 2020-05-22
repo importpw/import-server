@@ -83,9 +83,11 @@ export default class extends React.Component {
 			}
 		}
 
+		let swr = false;
 		if (format) {
 			if (res) {
 				res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+				swr = true;
 			}
 		} else {
 			if (wantsHTML) {
@@ -110,7 +112,14 @@ export default class extends React.Component {
 				...params,
 				file: params.entrypoint || params.file
 			});
-			redirect(res, url);
+			if (swr) {
+				const res2 = await fetch(url);
+				res.statusCode = res2.status;
+				//headers: [...res2.headers],
+				res.end(await res2.text());
+			} else {
+				redirect(res, url);
+			}
 		}
 	}
 
