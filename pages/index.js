@@ -116,7 +116,7 @@ export default class extends React.Component {
 				const res2 = await fetch(url);
 				res.statusCode = res2.status;
 				//headers: [...res2.headers],
-				res.end(await res2.text());
+				res2.body.pipe(res);
 			} else {
 				redirect(res, url);
 			}
