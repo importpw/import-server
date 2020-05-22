@@ -115,6 +115,7 @@ export default class extends React.Component {
 			if (swr) {
 				const res2 = await fetch(url);
 				res.statusCode = res2.status;
+				res.setHeader('Content-Location', res2.url);
 				//headers: [...res2.headers],
 				res.end(await res2.text());
 			} else {
