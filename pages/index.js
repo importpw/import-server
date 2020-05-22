@@ -64,7 +64,8 @@ export default class extends React.Component {
 			params.proto += ':';
 		}
 
-		const wantsHTML = shouldServeHTML(req);
+		let format = query.format;
+		const wantsHTML = format === 'html' || shouldServeHTML(req);
 		if (wantsHTML || query.fetch || (req && req.headers['x-fetch'])) {
 			const url = toURL({
 				...params,
@@ -82,10 +83,26 @@ export default class extends React.Component {
 			}
 		}
 
-		if (wantsHTML) {
+		let swr = false;
+		if (format) {
+			if (res) {
+				res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+				swr = true;
+			}
+		} else {
+			if (wantsHTML) {
+				format = 'html';
+			} else if (req && /json/i.test(req.headers.accept)) {
+				format = 'json';
+			} else {
+				format = 'raw';
+			}
+		}
+
+		if (format === 'html') {
 			// If the browser is requesting the URL, then render with Next.js
 			return params;
-		} else if (req && /json/i.test(req.headers.accept)) {
+		} else if (format === 'json') {
 			// Return a JSON representation if `Accept: application/json` is present
 			res.setHeader('Content-Type', 'application/json');
 			res.end(JSON.stringify(params));
@@ -95,7 +112,14 @@ export default class extends React.Component {
 				...params,
 				file: params.entrypoint || params.file
 			});
-			redirect(res, url);
+			if (swr) {
+				const res2 = await fetch(url);
+				res.statusCode = res2.status;
+				//headers: [...res2.headers],
+				res.end(await res2.text());
+			} else {
+				redirect(res, url);
+			}
 		}
 	}
 
