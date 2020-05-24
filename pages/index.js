@@ -13,7 +13,7 @@ import MarkdownLink from '../components/link';
 import MarkdownText from '../components/text';
 
 // Icons
-import Zeit from '../components/icons/zeit';
+import Vercel from '../components/icons/vercel';
 import Arrow from '../components/icons/arrow';
 import GitHub from '../components/icons/github';
 import Logotype from '../components/icons/import';
@@ -86,7 +86,10 @@ export default class extends React.Component {
 		let swr = false;
 		if (format) {
 			if (res) {
-				res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
+				res.setHeader(
+					'Cache-Control',
+					's-maxage=60, stale-while-revalidate'
+				);
 				swr = true;
 			}
 		} else {
@@ -235,8 +238,8 @@ export default class extends React.Component {
 						</div>
 						<div className="credits">
 							Crafted by{' '}
-							<a href="https://zeit.co">
-								<Zeit className="zeit" />
+							<a href="https://vercel.com">
+								<Vercel className="vercel" />
 							</a>
 						</div>
 					</div>
@@ -501,7 +504,7 @@ export default class extends React.Component {
 						margin-left: 10px;
 					}
 
-					.zeit {
+					.vercel {
 						margin-top: 2px;
 						margin-left: 2px;
 						height: 1em;
