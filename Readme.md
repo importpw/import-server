@@ -1,6 +1,7 @@
 # [import-server](https://import.pw)
 
-GitHub redirection and documentation server intended for use with `import`.
+GitHub redirection and documentation server intended for use with
+[`import`](https://github.com/importpw/import).
 
 ## Deploying to Vercel
 
