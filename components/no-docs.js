@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Cry from './icons/cry';
-import ObjectInspector from 'react-object-inspector';
+import { ObjectInspector } from 'react-inspector';
 import parseImportPath from '../lib/parse-import-path';
 
 export default props => {
@@ -147,7 +147,9 @@ export default props => {
 			<div className="why">{reasons}</div>
 
 			<h2>Data</h2>
-			<ObjectInspector data={props} />
+			<div className="inspector">
+				<ObjectInspector sortObjectKeys={true} data={props} />
+			</div>
 
 			<style jsx>{`
 				.top {
@@ -168,6 +170,10 @@ export default props => {
 					margin: 0;
 					padding: 0;
 					font-weight: 350;
+				}
+
+				.inspector :global(li::before) {
+					content: initial;
 				}
 			`}</style>
 		</div>

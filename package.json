@@ -20,9 +20,9 @@
     "parse-github-url": "^1.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-inspector": "^5.0.1",
     "react-markdown": "^3.4.1",
     "react-new-window": "0.1.2",
-    "react-object-inspector": "^0.2.1",
     "react-syntax-highlighter": "^8.0.1",
     "xterm": "^3.6.0"
   }
