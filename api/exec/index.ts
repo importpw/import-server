@@ -12,9 +12,7 @@ import {
 	close
 } from 'fs-extra';
 
-const isDev = process.env.VERCEL_REGION === 'dev1';
-console.log(process.env);
-console.log({ isDev });
+const isDev = process.env.NOW_REGION === 'dev1';
 
 async function download(url: string, dest: string) {
 	const res = await fetch(url);
