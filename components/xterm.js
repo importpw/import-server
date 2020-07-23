@@ -11,14 +11,6 @@ export default class extends React.Component {
 	componentDidMount() {
 		this.term = new Xterm(this.props);
 		this.term.open(findDOMNode(this));
-		/*
-    const geom = fit.proposeGeometry(this.term);
-    console.log({geom});
-    //this.cols = cols;
-    //this.rows = rows;
-    //window.addEventListener('resize', this.handleResize);
-    //this.term.fit();
-    */
 		fit.fit(this.term);
 	}
 
