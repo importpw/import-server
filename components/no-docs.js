@@ -148,7 +148,7 @@ export default props => {
 
 			<h2>Data</h2>
 			<div className="inspector">
-				<ObjectInspector sortObjectKeys={true} data={props} />
+				<ObjectInspector expandLevel={2} sortObjectKeys={true} data={props} />
 			</div>
 
 			<style jsx>{`
