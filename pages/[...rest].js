@@ -25,7 +25,6 @@ import resolveImport from '../lib/resolve';
 import toURL from '../lib/to-github-raw-url';
 import parseCommittish from '../lib/parse-committish';
 import parseImportPath from '../lib/parse-import-path';
-import shouldServeHTML from '../lib/should-serve-html';
 
 const resolveOpts = {
 	defaultOrg: 'importpw',
@@ -71,7 +70,7 @@ export default class extends React.Component {
 		console.log({ query });
 		let format = query._format || query.format;
 
-		const wantsHTML = format === 'html' || shouldServeHTML(req);
+		const wantsHTML = format === 'html';
 		if (wantsHTML || query.fetch || (req && req.headers['x-fetch'])) {
 			const url = toURL({
 				...params,
