@@ -6,7 +6,7 @@ export default class extends React.Component {
 	constructor(...args) {
 		super(...args);
 		this.state = {
-			showing: false
+			showing: false,
 		};
 		this.runExample = this.runExample.bind(this);
 		this.onWindowClose = this.onWindowClose.bind(this);
