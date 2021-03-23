@@ -1,4 +1,5 @@
 // Dependencies
+import React from 'react';
 import fetch from 'isomorphic-fetch';
 
 // React Components

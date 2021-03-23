@@ -1,3 +1,4 @@
+import React from 'react';
 import CodeExec from './code-exec';
 import NewWindow from 'react-new-window';
 

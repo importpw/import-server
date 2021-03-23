@@ -1,3 +1,4 @@
+import React from 'react';
 import { encode } from 'querystring';
 import fetch from 'isomorphic-fetch';
 import Xterm from './xterm';
