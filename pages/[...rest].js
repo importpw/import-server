@@ -67,7 +67,7 @@ export default class extends React.Component {
 			params.proto += ':';
 		}
 
-		const format = query._format || query.format || 'html';
+		const format = query.format || query._format || 'html';
 
 		const wantsHTML = format === 'html';
 		if (wantsHTML || query.fetch || (req && req.headers['x-fetch'])) {
