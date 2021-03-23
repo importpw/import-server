@@ -1,4 +1,5 @@
 // Dependencies
+import React from 'react';
 import fetch from 'isomorphic-fetch';
 
 // React Components
@@ -23,12 +24,13 @@ import redirect from '../lib/redirect';
 import resolveImport from '../lib/resolve';
 import toURL from '../lib/to-github-raw-url';
 import parseCommittish from '../lib/parse-committish';
+import parseImportPath from '../lib/parse-import-path';
 import shouldServeHTML from '../lib/should-serve-html';
 
 const resolveOpts = {
 	defaultOrg: 'importpw',
 	defaultRepo: 'import',
-	token: process.env.GITHUB_TOKEN // Server-side only
+	token: process.env.GITHUB_TOKEN, // Server-side only
 };
 
 /**
@@ -40,15 +42,17 @@ const resolveOpts = {
  */
 export default class extends React.Component {
 	static async getInitialProps({ req, res, query, asPath }) {
-		parseCommittish(query);
+		const parsed = parseImportPath(asPath);
+		parseCommittish(parsed);
 
-		if (query.repo === 'favicon.ico') {
-			const favicon = `https://github.com/${query.org ||
-				resolveOpts.defaultOrg}.png`;
+		if (parsed.repo === 'favicon.ico') {
+			const favicon = `https://github.com/${
+				parsed.org || resolveOpts.defaultOrg
+			}.png`;
 			return redirect(res, favicon);
 		}
 
-		const params = await resolveImport(query, resolveOpts);
+		const params = await resolveImport(parsed, resolveOpts);
 		params.asPath = asPath;
 
 		if (req) {
@@ -69,14 +73,14 @@ export default class extends React.Component {
 		if (wantsHTML || query.fetch || (req && req.headers['x-fetch'])) {
 			const url = toURL({
 				...params,
-				file: params.readme || params.file
+				file: params.readme || params.file,
 			});
 			const res2 = await fetch(url);
 			params.fetch = {
 				url: res2.url,
 				statusCode: res2.status,
 				//headers: [...res2.headers],
-				body: await res2.text()
+				body: await res2.text(),
 			};
 			if (res) {
 				res.statusCode = res2.status;
@@ -113,7 +117,7 @@ export default class extends React.Component {
 			// Otherwise redirect to the raw resource, for the `import` command case
 			const url = toURL({
 				...params,
-				file: params.entrypoint || params.file
+				file: params.entrypoint || params.file,
 			});
 			if (swr) {
 				const res2 = await fetch(url);
@@ -140,7 +144,7 @@ export default class extends React.Component {
 			repoDescription,
 			committish,
 			foundEntrypoint,
-			fetch: { statusCode, body }
+			fetch: { statusCode, body },
 		} = this.props;
 
 		const eOrg = encodeURIComponent(org);
@@ -177,7 +181,7 @@ export default class extends React.Component {
 				imageReference: MarkdownImage,
 				link,
 				linkReference: link,
-				text: MarkdownText
+				text: MarkdownText,
 			};
 			content = (
 				<Markdown
@@ -216,7 +220,7 @@ export default class extends React.Component {
 
 				<div className="header">
 					<div className="wrapper">
-						<Link href="/index" as="/">
+						<Link href="/">
 							<a>
 								<Logotype className="logotype" />
 							</a>

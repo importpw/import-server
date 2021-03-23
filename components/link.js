@@ -1,7 +1,6 @@
 import { join } from 'path';
 import { parse, resolve } from 'url';
 import Link from 'next/link';
-import parseImportPath from '../lib/parse-import-path';
 
 function MarkdownLink({ host, href, org, repo, asPath, children }) {
 	const prefix = `/${org}/${repo}`;
@@ -24,11 +23,8 @@ function MarkdownLink({ host, href, org, repo, asPath, children }) {
 	// TODO: parse github.com URLs into import.pw URLs when appropriate
 
 	if (isImportPath) {
-		const as = href;
-		const query = parseImportPath(href);
-		href = { pathname: '/index', query };
 		return (
-			<Link href={href} as={as}>
+			<Link href={href}>
 				<a>{children}</a>
 			</Link>
 		);

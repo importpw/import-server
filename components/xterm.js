@@ -1,3 +1,4 @@
+import React from 'react';
 import { findDOMNode } from 'react-dom';
 import Xterm from 'xterm/dist/xterm.js';
 import * as fit from 'xterm/lib/addons/fit/fit';

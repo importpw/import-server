@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import Cry from './icons/cry';
 import { ObjectInspector } from 'react-inspector';
-import parseImportPath from '../lib/parse-import-path';
 
-export default props => {
+export default function NoDocs(props) {
 	const {
 		org,
 		repo,
@@ -16,13 +15,11 @@ export default props => {
 		foundCommit,
 		foundFile,
 		foundEntrypoint,
-		foundReadme
+		foundReadme,
 	} = props;
 	const repoFull = `${org}/${repo}`;
 	const reasons = [];
 	if (!foundRepo) {
-		const as = '/importpw/import/docs/authentication.md';
-		const query = parseImportPath(as);
 		reasons.push(
 			<p key="repo">
 				<h4>
@@ -38,7 +35,7 @@ export default props => {
 						The repo is private - The docs won't be rendered by{' '}
 						<code>{host}</code>, but you may still use the{' '}
 						<code>import</code> command. See the{' '}
-						<Link href={{ pathname: '/index', query }} as={as}>
+						<Link href={'/importpw/import/docs/authentication.md'}>
 							<a>Authentication</a>
 						</Link>{' '}
 						page for details.
@@ -148,7 +145,11 @@ export default props => {
 
 			<h2>Data</h2>
 			<div className="inspector">
-				<ObjectInspector expandLevel={2} sortObjectKeys={true} data={props} />
+				<ObjectInspector
+					expandLevel={2}
+					sortObjectKeys={true}
+					data={props}
+				/>
 			</div>
 
 			<style jsx>{`
@@ -178,4 +179,4 @@ export default props => {
 			`}</style>
 		</div>
 	);
-};
+}
