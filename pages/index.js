@@ -44,7 +44,6 @@ export default class extends React.Component {
 	static async getInitialProps({ req, res, query, asPath }) {
 		const parsed = parseImportPath(asPath);
 		parseCommittish(parsed);
-		console.log({ parsed, query, asPath });
 
 		if (parsed.repo === 'favicon.ico') {
 			const favicon = `https://github.com/${

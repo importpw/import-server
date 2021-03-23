@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Cry from './icons/cry';
 import { ObjectInspector } from 'react-inspector';
 
-export default (props) => {
+export default function NoDocs(props) {
 	const {
 		org,
 		repo,
@@ -179,4 +179,4 @@ export default (props) => {
 			`}</style>
 		</div>
 	);
-};
+}
