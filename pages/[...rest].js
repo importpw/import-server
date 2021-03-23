@@ -26,9 +26,12 @@ import toURL from '../lib/to-github-raw-url';
 import parseCommittish from '../lib/parse-committish';
 import parseImportPath from '../lib/parse-import-path';
 
+const defaultOrg = 'importpw';
+const defaultRepo = 'import';
+
 const resolveOpts = {
-	defaultOrg: 'importpw',
-	defaultRepo: 'import',
+	defaultOrg,
+	defaultRepo,
 	token: process.env.GITHUB_TOKEN, // Server-side only
 };
 
@@ -205,7 +208,7 @@ export default class extends React.Component {
 
 				<div className="header">
 					<div className="wrapper">
-						<Link href="/">
+						<Link href={`${defaultOrg}/${defaultRepo}`} as="/">
 							<a>
 								<Logotype className="logotype" />
 							</a>
