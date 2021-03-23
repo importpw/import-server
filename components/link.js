@@ -15,7 +15,7 @@ function MarkdownLink({ host, href, org, repo, asPath, children }) {
 	let isImportPath = href.startsWith('/');
 
 	const parsed = parse(href);
-	if (parsed.host === host) {
+	if (parsed.hostname === 'import.pw') {
 		isImportPath = true;
 		href = parsed.pathname;
 	}
@@ -24,9 +24,9 @@ function MarkdownLink({ host, href, org, repo, asPath, children }) {
 
 	const className = isImportPath ? null : 'external';
 	return (
-		<a className={className} href={href}>
-			{children}
-		</a>
+		<Link href={href}>
+			<a className={className}>{children}</a>
+		</Link>
 	);
 }
 

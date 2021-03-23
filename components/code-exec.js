@@ -4,8 +4,8 @@ import fetch from 'isomorphic-fetch';
 import Ansi from './ansi';
 
 export default function CodeExec({ code }) {
-	const [ data, setData ] = useState('');
-	const write = (d) => setData(current => current + d);
+	const [data, setData] = useState('');
+	const write = (d) => setData((current) => current + d);
 
 	useEffect(async () => {
 		write(
@@ -29,7 +29,11 @@ export default function CodeExec({ code }) {
 
 	return (
 		<div className="wrapper">
-			<pre><code><Ansi>{data}</Ansi></code></pre>
+			<pre>
+				<code>
+					<Ansi>{data}</Ansi>
+				</code>
+			</pre>
 			<style jsx>{`
 				.wrapper {
 					color: white;
