@@ -2,5 +2,13 @@
   "public": true,
   "env": {
     "GITHUB_TOKEN": "@importpw-github-access-token"
-  }
+  },
+  "rewrites": [
+    { "source": "/", "has": [{ "type": "header", "key": "accept", "value": "text/html" }], "destination": "/importpw/import?_format=html" },
+    { "source": "/", "has": [{ "type": "header", "key": "accept", "value": "application/json" }], "destination": "/importpw/import?_format=json" },
+    { "source": "/", "destination": "/importpw/import?_format=raw" },
+    { "source": "/(.*)", "has": [{ "type": "header", "key": "accept", "value": "text/html" }], "destination": "/$1?_format=html" },
+    { "source": "/(.*)", "has": [{ "type": "header", "key": "accept", "value": "application/json" }], "destination": "/$1?_format=json" },
+    { "source": "/(.*)", "destination": "/$1?_format=raw" }
+  ]
 }
