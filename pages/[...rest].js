@@ -68,7 +68,7 @@ export default class extends React.Component {
 		}
 
 		console.log({ query });
-		let format = query._format || query.format;
+		let format = query._format || query.format || 'html';
 
 		const wantsHTML = format === 'html';
 		if (wantsHTML || query.fetch || (req && req.headers['x-fetch'])) {
@@ -88,47 +88,32 @@ export default class extends React.Component {
 			}
 		}
 
-		let swr = false;
-		if (format) {
-			if (res) {
-				res.setHeader(
-					'Cache-Control',
-					's-maxage=60, stale-while-revalidate'
-				);
-				swr = true;
-			}
-		} else {
-			if (wantsHTML) {
-				format = 'html';
-			} else if (req && /json/i.test(req.headers.accept)) {
-				format = 'json';
-			} else {
-				format = 'raw';
-			}
+		if (res) {
+			res.setHeader(
+				'Cache-Control',
+				's-maxage=60, stale-while-revalidate'
+			);
 		}
 
-		if (format === 'html') {
-			// If the browser is requesting the URL, then render with Next.js
-			return params;
-		} else if (format === 'json') {
-			// Return a JSON representation if `Accept: application/json` is present
+		if (format === 'json') {
+			// Return a JSON representation
 			res.setHeader('Content-Type', 'application/json; charset=utf8');
 			res.end(JSON.stringify(params));
-		} else {
-			// Otherwise redirect to the raw resource, for the `import` command case
+		} else if (format === 'raw') {
+			// Proxy to the raw resource and cache it at the edge
 			const url = toURL({
 				...params,
 				file: params.entrypoint || params.file,
 			});
-			if (swr) {
-				const res2 = await fetch(url);
-				res.statusCode = res2.status;
-				res.setHeader('Content-Location', res2.url);
-				//headers: [...res2.headers],
-				res.end(await res2.text());
-			} else {
-				redirect(res, url);
-			}
+
+			const res2 = await fetch(url);
+			res.statusCode = res2.status;
+			res.setHeader('Content-Location', res2.url);
+			//headers: [...res2.headers],
+			res.end(await res2.buffer());
+		} else {
+			// Render with Next.js
+			return params;
 		}
 	}
 
