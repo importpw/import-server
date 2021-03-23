@@ -22,19 +22,12 @@ function MarkdownLink({ host, href, org, repo, asPath, children }) {
 
 	// TODO: parse github.com URLs into import.pw URLs when appropriate
 
-	if (isImportPath) {
-		return (
-			<Link href={href}>
-				<a>{children}</a>
-			</Link>
-		);
-	} else {
-		return (
-			<a className="external" href={href}>
-				{children}
-			</a>
-		);
-	}
+	const className = isImportPath ? null : 'external';
+	return (
+		<a className={className} href={href}>
+			{children}
+		</a>
+	);
 }
 
 export default MarkdownLink;
