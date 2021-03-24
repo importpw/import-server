@@ -51,6 +51,19 @@ export default class extends React.Component {
 			return redirect(res, favicon);
 		}
 
+		if (parsed.org === 'docs') {
+			let file = parsed.repo;
+			if (parsed.file) {
+				file += '/' + parsed.file;
+			}
+			parsed.file = `docs/${file}`;
+			if (!parsed.file.endsWith('.md')) {
+				parsed.file += '.md';
+			}
+			parsed.org = resolveOpts.defaultOrg;
+			parsed.repo = resolveOpts.defaultRepo;
+		}
+
 		const params = await resolveImport(parsed, resolveOpts);
 		params.asPath = asPath;
 
@@ -205,7 +218,7 @@ export default class extends React.Component {
 
 				<div className="header">
 					<div className="wrapper">
-						<Link href="/">
+						<Link href="/importpw/import">
 							<a>
 								<Logotype className="logotype" />
 							</a>
