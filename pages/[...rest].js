@@ -110,7 +110,7 @@ export default class extends React.Component {
 			res.statusCode = res2.status;
 			res.setHeader('Content-Location', res2.url);
 			const filename = basename(res2.url);
-			res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+			res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
 			//headers: [...res2.headers],
 			res.end(await res2.buffer());
 		} else {
