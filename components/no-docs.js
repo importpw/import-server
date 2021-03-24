@@ -8,7 +8,6 @@ export default function NoDocs(props) {
 		repo,
 		file,
 		host,
-		fetch,
 		entrypoint,
 		committish,
 		foundRepo,

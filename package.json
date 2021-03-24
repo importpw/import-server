@@ -14,7 +14,7 @@
   "dependencies": {
     "emoji-dictionary": "^1.0.9",
     "github-api": "^3.0.0",
-    "isomorphic-fetch": "^2.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "next": "^10.0.9",
     "parse-ansi": "^1.0.3",
     "parse-github-url": "^1.0.2",

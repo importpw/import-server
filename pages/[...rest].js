@@ -90,10 +90,14 @@ export default class extends React.Component {
 				file: params.readme || params.file,
 			});
 			const res2 = await fetch(url);
+			const headers = {};
+			for (const [key, value] of res2.headers) {
+				headers[key] = value;
+			}
 			params.fetch = {
 				url: res2.url,
 				statusCode: res2.status,
-				//headers: [...res2.headers],
+				headers,
 				body: await res2.text(),
 			};
 			if (res) {
@@ -124,7 +128,10 @@ export default class extends React.Component {
 			res.setHeader('Content-Location', res2.url);
 			const filename = basename(res2.url);
 			res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-			//headers: [...res2.headers],
+			const contentType = res2.headers.get('content-type');
+			if (contentType) {
+				res.setHeader('Content-Type', contentType);
+			}
 			res.end(await res2.buffer());
 		} else {
 			// Render with Next.js
