@@ -4,6 +4,7 @@
     "GITHUB_TOKEN": "@importpw-github-access-token"
   },
   "rewrites": [
+    { "source": "/api/og/(.*)", "destination": "/api/og" },
     { "source": "/", "has": [{ "type": "header", "key": "accept", "value": "application/json" }], "destination": "/importpw/import?_format=json" },
     { "source": "/", "has": [{ "type": "header", "key": "user-agent", "value": ".*(curl|wget).*" }], "destination": "/importpw/import?_format=raw" },
     { "source": "/", "destination": "/importpw/import?_format=html" },

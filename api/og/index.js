@@ -4,10 +4,10 @@ const fetch = require('node-fetch');
 const { createCanvas, loadImage, registerFont } = require('canvas');
 
 // Hack to get the libuuid, etc. included in the serverless function
-console.log(fs.readdirSync(__dirname + '/../../../lib'));
+console.log(fs.readdirSync(__dirname + '/../../lib'));
 
 /* Load Archivo font */
-registerFont(__dirname + '/../fonts/archivo_bold.ttf', {
+registerFont(__dirname + '/fonts/archivo_bold.ttf', {
 	family: 'Archivo',
 	weight: 'bold'
 });
@@ -20,8 +20,8 @@ const HEIGHT = 800;
 const color = '#ffffff';
 const backgroundColor = '#000000';
 
-const logoPromise = loadImage(__dirname + '/../images/import.png');
-const arrowPromise = loadImage(__dirname + '/../images/arrow.png');
+const logoPromise = loadImage(__dirname + '/images/import.png');
+const arrowPromise = loadImage(__dirname + '/images/arrow.png');
 
 async function fetchImage(url) {
 	const res = await fetch(url);
@@ -33,7 +33,15 @@ async function fetchImage(url) {
 }
 
 async function handler(req, res) {
-	const { org, repo } = req.query;
+	const { pathname, query: { debug } } = parse(req.url, true)
+	let [_api, _og, org, repo] = pathname.substring(1).split('/');
+
+	if (!repo) {
+		repo = org;
+		org = null;
+	}
+
+	console.log({ pathname, org, repo, debug })
 
 	const ops = [logoPromise];
 	if (org) {
@@ -71,9 +79,11 @@ async function handler(req, res) {
 	ctx.fillStyle = backgroundColor;
 	ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-	// Draw bounding box (debug)
-	//ctx.fillStyle = 'red';
-	//ctx.fillRect(boundingBoxX, boundingBoxY, boundingBoxWidth, boundingBoxHeight);
+	if (debug) {
+		// Draw bounding box (debug)
+		ctx.fillStyle = 'red';
+		ctx.fillRect(boundingBoxX, boundingBoxY, boundingBoxWidth, boundingBoxHeight);
+	}
 
 	ctx.fillStyle = 'blue';
 	//ctx.fillRect(WIDTH / 2, 0, 1, HEIGHT);
