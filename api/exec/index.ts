@@ -27,7 +27,7 @@ const importBinPath = (async () => {
 	await mkdirp(dir);
 
 	const ops = [];
-	ops.push(download('https://import.pw/?format=raw', join(dir, 'import')));
+	ops.push(download('https://import.sh/?format=raw', join(dir, 'import')));
 
 	if (!isDev) {
 		// In AWS Lambda, there is no `curl` command,
