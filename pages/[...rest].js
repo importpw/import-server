@@ -158,7 +158,10 @@ export default class extends React.Component {
 		const eOrg = encodeURIComponent(org);
 		const eRepo = encodeURIComponent(repo);
 		const avatar = `https://github.com/${eOrg}.png`;
-		const ogImageUrl = `${proto}//${host}/api/og/${eOrg}/${eRepo}`;
+
+		let ogImageUrl = `${proto}//${host}/api/og/`;
+		ogImageUrl += resolveOpts.defaultOrg === org ? eRepo : `${eOrg}/${eRepo}`;
+
 		let arrow;
 		let orgLogo;
 		let ghUrl = `https://github.com/${eOrg}/${eRepo}`;
