@@ -34,7 +34,7 @@ async function fetchImage(url) {
 
 async function handler(req, res) {
 	const { pathname, query: { debug } } = parse(req.url, true)
-	let [_api, _og, org, repo] = pathname.substring(1).split('/');
+	let [org, repo] = pathname.split('/').slice(3);
 
 	if (!repo) {
 		repo = org;
