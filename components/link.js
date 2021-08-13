@@ -33,7 +33,7 @@ function MarkdownLink({ href, org, repo, asPath, children }) {
 
 	// Map hard-coded `https://import.sh` links
 	// to be root-relative (for dev/staging).
-	if (parsed.hostname === 'import.sh') {
+	if (parsed.hostname === 'import.sh' || parsed.hostname === 'import.pw') {
 		isImportPath = true;
 		href = parsed.pathname;
 	}
