@@ -41,8 +41,6 @@ async function handler(req, res) {
 		org = null;
 	}
 
-	console.log({ pathname, org, repo, debug })
-
 	const ops = [logoPromise];
 	if (org) {
 		const avatarUrl = `https://github.com/${org}.png`;
