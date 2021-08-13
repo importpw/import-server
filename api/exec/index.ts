@@ -11,6 +11,7 @@ import {
 	open,
 	close
 } from 'fs-extra';
+import { IncomingMessage, ServerResponse } from 'http';
 
 const isDev = process.env.NOW_REGION === 'dev1';
 
@@ -38,7 +39,7 @@ const importBinPath = (async () => {
 	return dir;
 })();
 
-export default async function (req, res) {
+export default async function (req: IncomingMessage, res: ServerResponse) {
 	const origCwd = process.cwd();
 	const workPath = join(tmpdir(), Math.random().toString(32).slice(2));
 	try {
