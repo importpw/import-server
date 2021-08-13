@@ -31,9 +31,9 @@ function MarkdownLink({ href, org, repo, asPath, children }) {
 
 	const parsed = parse(href);
 
-	// Map hard-coded `https://import.pw` links
+	// Map hard-coded `https://import.sh` links
 	// to be root-relative (for dev/staging).
-	if (parsed.hostname === 'import.pw') {
+	if (parsed.hostname === 'import.sh') {
 		isImportPath = true;
 		href = parsed.pathname;
 	}

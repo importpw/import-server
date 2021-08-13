@@ -1,4 +1,4 @@
-# [import-server](https://import.pw)
+# [import-server](https://import.sh)
 
 GitHub redirection and documentation server intended for use with
 [`import`](https://github.com/importpw/import).
