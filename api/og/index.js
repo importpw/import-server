@@ -9,7 +9,7 @@ console.log(fs.readdirSync(__dirname + '/../../lib'));
 /* Load Archivo font */
 registerFont(__dirname + '/fonts/archivo_bold.ttf', {
 	family: 'Archivo',
-	weight: 'bold'
+	weight: 'bold',
 });
 
 /* Dimensions */
@@ -33,7 +33,10 @@ async function fetchImage(url) {
 }
 
 async function handler(req, res) {
-	const { pathname, query: { debug } } = parse(req.url, true)
+	const {
+		pathname,
+		query: { debug },
+	} = parse(req.url, true);
 	let [org, repo] = pathname.split('/').slice(3);
 
 	if (!repo) {
@@ -80,7 +83,12 @@ async function handler(req, res) {
 	if (debug) {
 		// Draw bounding box (debug)
 		ctx.fillStyle = 'red';
-		ctx.fillRect(boundingBoxX, boundingBoxY, boundingBoxWidth, boundingBoxHeight);
+		ctx.fillRect(
+			boundingBoxX,
+			boundingBoxY,
+			boundingBoxWidth,
+			boundingBoxHeight
+		);
 	}
 
 	ctx.fillStyle = 'blue';

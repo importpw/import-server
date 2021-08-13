@@ -9,7 +9,7 @@ import {
 	mkdirp,
 	remove,
 	open,
-	close
+	close,
 } from 'fs-extra';
 import { IncomingMessage, ServerResponse } from 'http';
 
@@ -32,7 +32,12 @@ const importBinPath = (async () => {
 	if (!isDev) {
 		// In AWS Lambda, there is no `curl` command,
 		// so download this static binary
-		ops.push(download('https://github.com/dtschan/curl-static/releases/download/v7.63.0/curl', join(dir, 'curl')));
+		ops.push(
+			download(
+				'https://github.com/dtschan/curl-static/releases/download/v7.63.0/curl',
+				join(dir, 'curl')
+			)
+		);
 	}
 
 	await Promise.all(ops);
@@ -48,7 +53,7 @@ export default async function (req: IncomingMessage, res: ServerResponse) {
 
 		const inputFile = join(workPath, 'input.sh');
 		const ws = createWriteStream(inputFile, {
-			mode: 0o777
+			mode: 0o777,
 		});
 		req.pipe(ws);
 		await once(ws, 'close');
@@ -60,7 +65,7 @@ export default async function (req: IncomingMessage, res: ServerResponse) {
 			...process.env,
 			PATH: `${process.env.PATH}:${await importBinPath}`,
 			CURL_CA_BUNDLE: '/etc/ssl/certs/ca-bundle.crt',
-			IMPORT_CACHE: workPath
+			IMPORT_CACHE: workPath,
 		};
 
 		// The static `curl` binary we download for AWS Lambda has the incorrect
@@ -72,7 +77,7 @@ export default async function (req: IncomingMessage, res: ServerResponse) {
 		const proc = execa(inputFile, [], {
 			env,
 			reject: false,
-			stdio: ['ignore', fd, fd]
+			stdio: ['ignore', fd, fd],
 		});
 		const result = await proc;
 		await close(fd);

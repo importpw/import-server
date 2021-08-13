@@ -6,3 +6,4 @@ package-lock.json
 /.now
 /.vercel
 /lib/*.so*
+/.vscode

@@ -127,7 +127,10 @@ export default class extends React.Component {
 			res.statusCode = res2.status;
 			res.setHeader('Content-Location', res2.url);
 			const filename = basename(res2.url);
-			res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+			res.setHeader(
+				'Content-Disposition',
+				`inline; filename="${filename}"`
+			);
 			const contentType = res2.headers.get('content-type');
 			if (contentType) {
 				res.setHeader('Content-Type', contentType);
@@ -160,7 +163,8 @@ export default class extends React.Component {
 		const avatar = `https://github.com/${eOrg}.png`;
 
 		let ogImageUrl = `${proto}//${host}/api/og/`;
-		ogImageUrl += resolveOpts.defaultOrg === org ? eRepo : `${eOrg}/${eRepo}`;
+		ogImageUrl +=
+			resolveOpts.defaultOrg === org ? eRepo : `${eOrg}/${eRepo}`;
 
 		let arrow;
 		let orgLogo;
