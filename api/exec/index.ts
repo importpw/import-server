@@ -61,7 +61,7 @@ export default async function (req: IncomingMessage, res: ServerResponse) {
 		const outputFile = join(workPath, '.output');
 		const fd = await open(outputFile, 'w');
 
-		const env = {
+		const env: typeof process.env = {
 			...process.env,
 			PATH: `${process.env.PATH}:${await importBinPath}`,
 			CURL_CA_BUNDLE: '/etc/ssl/certs/ca-bundle.crt',
