@@ -17,5 +17,6 @@ export default function MarkdownImage(props) {
 		const file = parsed.blob.substring(committish.length + 1);
 		src = toURL({ org, repo, committish, file });
 	}
-	return <img {...props} src={src} />;
+	// eslint-disable-next-line @next/next/no-img-element
+	return <img {...props} src={src} alt="" />;
 }
