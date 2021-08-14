@@ -6,7 +6,6 @@ import fetch from 'isomorphic-fetch';
 // React Components
 import Link from 'next/link';
 import Head from 'next/head';
-import curry from '../components/curry';
 import NoDocs from '../components/no-docs';
 import Markdown from 'react-markdown';
 import MarkdownCode from '../components/code';
@@ -40,7 +39,7 @@ const resolveOpts = {
  *   - file - file name to load
  *   - committish - commit ref / tag / branch
  */
-export default class extends React.Component {
+export default class Page extends React.Component {
 	static async getInitialProps({ req, res, query, asPath }) {
 		const parsed = parseImportPath(asPath);
 		parseCommittish(parsed);
@@ -172,7 +171,8 @@ export default class extends React.Component {
 		let title = 'import ';
 		if (resolveOpts.defaultOrg !== org) {
 			arrow = <Arrow className="arrow" />;
-			orgLogo = <img className="avatar logo" src={avatar} />;
+			// eslint-disable-next-line @next/next/no-img-element
+			orgLogo = <img className="avatar logo" src={avatar} alt={``} />;
 			title += `${org}/`;
 		}
 		if (resolveOpts.defaultRepo !== repo) {
@@ -189,7 +189,11 @@ export default class extends React.Component {
 			statusCode === 200 &&
 			(typeof foundEntrypoint !== 'boolean' || foundEntrypoint)
 		) {
-			const link = curry(MarkdownLink, this.props);
+			const link = (props) => (
+				<MarkdownLink {...this.props} {...props}>
+					{props.children}
+				</MarkdownLink>
+			);
 			const renderers = {
 				code: MarkdownCode,
 				image: MarkdownImage,
@@ -310,11 +314,11 @@ export default class extends React.Component {
 					}
 
 					h2 code ::before {
-						content: "\`\";
-          }
+						content: '\`';
+					}
 
-          h2 code ::after {
-            content: "\`\";
+					h2 code ::after {
+						content: '\`';
 					}
 
 					h3 {
@@ -364,11 +368,11 @@ export default class extends React.Component {
 					}
 
 					li code::before {
-						content: "\`\";
-          }
+						content: '\`';
+					}
 
-          li code::after {
-            content: "\`\";
+					li code::after {
+						content: '\`';
 					}
 
 					li a {
@@ -386,11 +390,11 @@ export default class extends React.Component {
 					}
 
 					p code::before {
-						content: "\`\";
-          }
+						content: '\`';
+					}
 
-          p code::after {
-            content: "\`\";
+					p code::after {
+						content: '\`';
 					}
 
 					pre code {

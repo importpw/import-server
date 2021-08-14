@@ -2,7 +2,7 @@ import React from 'react';
 import CodeExec from './code-exec';
 import NewWindow from 'react-new-window';
 
-export default class extends React.Component {
+export default class CodeExample extends React.Component {
 	constructor(...args) {
 		super(...args);
 		this.state = {

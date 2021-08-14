@@ -31,7 +31,7 @@ export default function NoDocs(props) {
 						name is correct.
 					</li>
 					<li>
-						The repo is private - The docs won't be rendered by{' '}
+						The repo is private - The docs won&apos;t be rendered by{' '}
 						<code>{host}</code>, but you may still use the{' '}
 						<code>import</code> command. See the{' '}
 						<Link href={'/importpw/import/docs/authentication.md'}>
