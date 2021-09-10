@@ -1,8 +1,4 @@
 {
-  "public": true,
-  "env": {
-    "GITHUB_TOKEN": "@importpw-github-access-token"
-  },
   "rewrites": [
     { "source": "/api/og/(.*)", "destination": "/api/og" },
     {
