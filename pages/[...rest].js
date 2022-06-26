@@ -123,6 +123,15 @@ export default class Page extends React.Component {
 			});
 
 			const res2 = await fetch(url);
+			if (res2.status === 404) {
+				// Might be a private repo, so redirect the client to the
+				// raw resource so they can authenticate against GitHub
+				res.statusCode = 307;
+				res.setHeader('Location', res2.url);
+				res.end();
+				return;
+			}
+
 			res.statusCode = res2.status;
 			res.setHeader('Content-Location', res2.url);
 			const filename = basename(res2.url);
