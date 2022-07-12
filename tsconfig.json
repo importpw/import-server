@@ -29,7 +29,8 @@
   "include": [
     "next-env.d.ts",
     "pages/*.tsx",
-    "components/*.tsx"
+    "components/*.tsx",
+    "middleware.ts"
   ],
   "exclude": [
     "node_modules"

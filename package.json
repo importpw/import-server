@@ -1,6 +1,6 @@
 {
   "name": "import-server",
-  "version": "1.0.0",
+  "private": true,
   "description": "Redirects to GitHub repo raw URLs for use with `import`",
   "author": "Nathan Rajlich <n@n8.io>",
   "license": "MIT",
@@ -9,27 +9,30 @@
     "url": "git://github.com/importpw/import-server.git"
   },
   "scripts": {
-    "build": "next build"
+    "build": "next build",
+    "dev": "next dev"
   },
   "dependencies": {
     "emoji-dictionary": "^1.0.9",
     "github-api": "^3.0.0",
     "isomorphic-fetch": "^3.0.0",
-    "next": "^12.1.0",
+    "next": "^12.2.2",
     "parse-ansi": "^1.0.3",
     "parse-github-url": "^1.0.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-inspector": "^5.1.0",
     "react-markdown": "^3.4.1",
     "react-new-window": "^0.1.3",
     "react-syntax-highlighter": "^8.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^28.1.4",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.0",
+    "jest": "^28.1.2",
     "typescript": "^4.3.5"
   }
 }
