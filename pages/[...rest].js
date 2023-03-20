@@ -170,9 +170,9 @@ export default class Page extends React.Component {
 		const eRepo = encodeURIComponent(repo);
 		const avatar = `https://github.com/${eOrg}.png`;
 
-		let ogImageUrl = `${proto}//${host}/api/og/`;
+		let ogImageUrl = `${proto}//${host}/api/og?`;
 		ogImageUrl +=
-			resolveOpts.defaultOrg === org ? eRepo : `${eOrg}/${eRepo}`;
+			resolveOpts.defaultOrg === org ? `repo=${eRepo}` : `org=${eOrg}&repo=${eRepo}`;
 
 		let arrow;
 		let orgLogo;
