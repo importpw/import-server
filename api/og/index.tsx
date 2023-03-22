@@ -1,16 +1,16 @@
-import React from "react";
-import { ImageResponse } from "@vercel/og";
+import React from 'react';
+import { ImageResponse } from '@vercel/og';
 
-export const config = { runtime: "edge" };
+export const config = { runtime: 'edge' };
 
 export default function OG(req: Request) {
 	const url = new URL(req.url);
-	const org = url.searchParams.get("org");
-	const repo = url.searchParams.get("repo");
+	const org = url.searchParams.get('org');
+	const repo = url.searchParams.get('repo');
 
 	let importStr = 'import';
 	if (repo) {
-		importStr += '"';
+		importStr += ' "';
 		if (org) {
 			importStr += `${org}/`;
 		}
@@ -22,29 +22,29 @@ export default function OG(req: Request) {
 			<div
 				style={{
 					fontSize: 80,
-					fontWeight: "bold",
-					backgroundColor: "black",
-					color: "white",
-					width: "100%",
-					height: "100%",
-					display: "flex",
-					textAlign: "center",
-					alignItems: "center",
-					justifyContent: "center",
-					flexDirection: "column",
-					fontFamily: "monospace",
+					fontWeight: 'bold',
+					backgroundColor: 'black',
+					color: 'white',
+					width: '100%',
+					height: '100%',
+					display: 'flex',
+					textAlign: 'center',
+					alignItems: 'center',
+					justifyContent: 'center',
+					flexDirection: 'column',
+					fontFamily: 'monospace',
 				}}
 			>
 				<div
 					style={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center',
 					}}
 				>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					<img
-						src={new URL("/import.png", url).href}
+						src={new URL('/import.png', url).href}
 						alt="logo"
 						height={300}
 					/>
@@ -52,10 +52,10 @@ export default function OG(req: Request) {
 						<>
 							{/* eslint-disable-next-line @next/next/no-img-element */}
 							<img
-								src={new URL("/arrow.png", url).href}
+								src={new URL('/arrow.png', url).href}
 								alt="arrow"
 								height={180}
-								style={{ padding: "0 50px" }}
+								style={{ padding: '0 50px' }}
 							/>
 							{/* eslint-disable-next-line @next/next/no-img-element */}
 							<img
@@ -67,8 +67,8 @@ export default function OG(req: Request) {
 						</>
 					)}
 				</div>
-				<p style={{ padding: 0, margin: 0 }}>
-					import &quot;{importStr}&quot;
+				<p style={{ padding: 0, margin: 0, paddingTop: '10px' }}>
+					{importStr}
 				</p>
 			</div>
 		),
