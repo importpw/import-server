@@ -7,7 +7,16 @@ export default function OG(req: Request) {
 	const url = new URL(req.url);
 	const org = url.searchParams.get("org");
 	const repo = url.searchParams.get("repo");
-	const importStr = org ? `${org}/${repo}` : repo;
+
+	let importStr = 'import';
+	if (repo) {
+		importStr += '"';
+		if (org) {
+			importStr += `${org}/`;
+		}
+		importStr += `${repo}"`;
+	}
+
 	return new ImageResponse(
 		(
 			<div
@@ -58,7 +67,7 @@ export default function OG(req: Request) {
 						</>
 					)}
 				</div>
-				<p>
+				<p style={{ padding: 0, margin: 0 }}>
 					import &quot;{importStr}&quot;
 				</p>
 			</div>
