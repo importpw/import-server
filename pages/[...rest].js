@@ -250,7 +250,7 @@ export default class Page extends React.Component {
 					<meta property="og:title" content={title} />
 					<meta property="og:description" content={repoDescription} />
 					<meta property="og:type" content="website" />
-					<meta property="description" content={repoDescription} />
+					<meta name="description" content={repoDescription} />
 				</Head>
 
 				<div className="header">
