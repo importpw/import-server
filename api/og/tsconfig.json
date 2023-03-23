@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2019",
+    "lib": [
+      "esnext", "DOM"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "jsx": "react",
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
+    "incremental": true
+  },
+  "include": [
+    "*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

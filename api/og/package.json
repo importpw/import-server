@@ -1,12 +1,13 @@
 {
+  "private": true,
   "description": "Dynamically generated Open Graph card for `import`",
   "author": "Nathan Rajlich <n@n8.io>",
   "license": "MIT",
-  "scripts": {
-    "vercel-build": "cd ../../ && curl -sfLS \"https://github.com/jwerre/node-canvas-lambda/blob/master/node12_canvas_lib64_layer.zip?raw=true\" > lib.zip && unzip -o lib.zip && rm lib.zip"
-  },
   "dependencies": {
-    "canvas": "^2.6.1",
-    "node-fetch": "^2.6.7"
+    "@vercel/og": "^0.4.0",
+    "react": "^17.0.2"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }

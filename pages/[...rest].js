@@ -170,28 +170,34 @@ export default class Page extends React.Component {
 		const eRepo = encodeURIComponent(repo);
 		const avatar = `https://github.com/${eOrg}.png`;
 
-		let ogImageUrl = `${proto}//${host}/api/og/`;
-		ogImageUrl +=
-			resolveOpts.defaultOrg === org ? eRepo : `${eOrg}/${eRepo}`;
-
 		let arrow;
 		let orgLogo;
 		let ghUrl = `https://github.com/${eOrg}/${eRepo}`;
-		let title = 'import ';
-		if (resolveOpts.defaultOrg !== org) {
-			arrow = <Arrow className="arrow" />;
-			// eslint-disable-next-line @next/next/no-img-element
-			orgLogo = <img className="avatar logo" src={avatar} alt={``} />;
-			title += `${org}/`;
-		}
+		let ogImageUrl = `${proto}//${host}/api/og`;
+		let title = 'import';
+
 		if (resolveOpts.defaultRepo !== repo) {
+			title += ` "`;
+			ogImageUrl += '?';
+
+			if (resolveOpts.defaultOrg !== org) {
+				arrow = <Arrow className="arrow" />;
+				// eslint-disable-next-line @next/next/no-img-element
+				orgLogo = <img className="avatar logo" src={avatar} alt={``} />;
+				title += `${org}/`;
+				ogImageUrl += `org=${eOrg}&`;
+			}
+
 			title += repo;
+			ogImageUrl += `repo=${eRepo}`;
+
+			if (committish !== 'master') {
+				ghUrl += `/tree/${committish}`;
+				title += `@${committish}`;
+			}
+
+			title += `"`;
 		}
-		if (committish !== 'master') {
-			ghUrl += `/tree/${committish}`;
-			title += `@${committish}`;
-		}
-		title = title.trim();
 
 		let content;
 		if (
@@ -244,6 +250,7 @@ export default class Page extends React.Component {
 					<meta property="og:title" content={title} />
 					<meta property="og:description" content={repoDescription} />
 					<meta property="og:type" content="website" />
+					<meta name="description" content={repoDescription} />
 				</Head>
 
 				<div className="header">
