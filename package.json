@@ -12,6 +12,7 @@
     "build": "next build"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.0.0",
     "emoji-dictionary": "^1.0.9",
     "github-api": "^3.0.0",
     "isomorphic-fetch": "^3.0.0",
