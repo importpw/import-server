@@ -6,8 +6,5 @@
   "dependencies": {
     "@vercel/og": "^0.4.0",
     "react": "^17.0.2"
-  },
-  "engines": {
-    "node": "16.x"
   }
 }
