@@ -3,16 +3,9 @@ import fetch from 'node-fetch';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
+import { createWriteStream, createReadStream } from 'node:fs';
+import { mkdir, rm, writeFile, open } from 'node:fs/promises';
 import once from '@tootallnate/once';
-import {
-	createWriteStream,
-	createReadStream,
-	mkdirp,
-	remove,
-	open,
-	close,
-	writeFile,
-} from 'fs-extra';
 
 import type { Route } from './+types/api.exec';
 
@@ -28,7 +21,7 @@ async function download(url: string, dest: string) {
 
 const importBinPath = (async () => {
 	const dir = join(tmpdir(), Math.random().toString(32).slice(2));
-	await mkdirp(dir);
+	await mkdir(dir, { recursive: true });
 
 	const ops: Promise<void>[] = [];
 	ops.push(download('https://import.sh/?format=raw', join(dir, 'import')));
@@ -62,7 +55,7 @@ async function handle(request: Request): Promise<Response> {
 	const workPath = join(tmpdir(), Math.random().toString(32).slice(2));
 
 	try {
-		await mkdirp(workPath);
+		await mkdir(workPath, { recursive: true });
 		process.chdir(workPath);
 
 		const inputFile = join(workPath, 'input.sh');
@@ -70,7 +63,7 @@ async function handle(request: Request): Promise<Response> {
 		await writeFile(inputFile, bodyBuffer, { mode: 0o777 });
 
 		const outputFile = join(workPath, '.output');
-		const fd = await open(outputFile, 'w');
+		const fh = await open(outputFile, 'w');
 
 		const env: NodeJS.ProcessEnv = {
 			...process.env,
@@ -86,10 +79,10 @@ async function handle(request: Request): Promise<Response> {
 		const proc = execa(inputFile, [], {
 			env,
 			reject: false,
-			stdio: ['ignore', fd, fd],
+			stdio: ['ignore', fh.fd, fh.fd],
 		});
 		const result = await proc;
-		await close(fd);
+		await fh.close();
 
 		const nodeStream = createReadStream(outputFile);
 		const webStream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
@@ -98,7 +91,7 @@ async function handle(request: Request): Promise<Response> {
 		nodeStream.on('close', async () => {
 			try {
 				process.chdir(origCwd);
-				await remove(workPath);
+				await rm(workPath, { recursive: true, force: true });
 			} catch {
 				// ignore
 			}
@@ -116,7 +109,7 @@ async function handle(request: Request): Promise<Response> {
 		// In case of an error, clean up now
 		try {
 			process.chdir(origCwd);
-			await remove(workPath);
+			await rm(workPath, { recursive: true, force: true });
 		} catch {
 			// ignore
 		}
