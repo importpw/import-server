@@ -1,37 +1,49 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "target": "es5",
+    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "es2022"
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
+    "incremental": true,
     "typeRoots": [
       "./types",
       "./node_modules/@types"
     ],
-    "incremental": true
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "~/*": [
+        "./*"
+      ]
+    },
+    "noImplicitAny": false
   },
   "include": [
     "next-env.d.ts",
-    "pages/*.tsx",
-    "components/*.tsx"
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next",
+    "build",
+    "public"
   ]
 }

@@ -1,69 +1,78 @@
-import parseAnsi, { AnsiStyle } from 'parse-ansi';
-
-import styles from '../styles/ansi.module.css';
+import Anser from 'anser';
+import styles from './ansi.module.css';
 
 interface AnsiProps {
 	children: string;
 }
 
-function mapClassNames(style: AnsiStyle) {
+interface AnserPart {
+	content: string;
+	fg: string | null;
+	bg: string | null;
+	decoration: string | null;
+	decorations?: string[];
+}
+
+/**
+ * Map anser's RGB-triplet colors to our CSS module class names. Anser returns
+ * `fg`/`bg` as `"R, G, B"`; the 8 standard colors map to named classes in
+ * `ansi.module.css`.
+ */
+const RGB_TO_NAME: Record<string, string> = {
+	'0, 0, 0': 'black',
+	'187, 0, 0': 'red',
+	'0, 187, 0': 'green',
+	'187, 187, 0': 'yellow',
+	'0, 0, 187': 'blue',
+	'187, 0, 187': 'magenta',
+	'0, 187, 187': 'cyan',
+	'255, 255, 255': 'white',
+	'85, 85, 85': 'gray',
+	'255, 85, 85': 'red',
+	'85, 255, 85': 'green',
+	'255, 255, 85': 'yellow',
+	'85, 85, 255': 'blue',
+	'255, 85, 255': 'magenta',
+	'85, 255, 255': 'cyan',
+};
+
+function classesFor(part: AnserPart): string | undefined {
 	const classes: string[] = [];
-	let fg: string | undefined;
-	let bg: string | undefined;
 
-	if (style.bold) {
-		classes.push(styles.bold);
+	const decorations = part.decorations ?? (part.decoration ? [part.decoration] : []);
+	const has = (d: string) => decorations.includes(d);
+
+	if (has('bold')) classes.push(styles.bold);
+	if (has('italic')) classes.push(styles.italic);
+	if (has('underline')) classes.push(styles.underline);
+	if (has('strikethrough')) classes.push(styles.strikethrough);
+
+	const inverse = has('reverse');
+	let fgName = part.fg ? RGB_TO_NAME[part.fg] : undefined;
+	let bgName = part.bg ? RGB_TO_NAME[part.bg] : undefined;
+	if (inverse) {
+		[fgName, bgName] = [bgName, fgName];
 	}
-
-	if (style.italic) {
-		classes.push(styles.italic);
-	}
-
-	if (style.strikethrough) {
-		classes.push(styles.strikethrough);
-	}
-
-	if (style.underline) {
-		classes.push(styles.underline);
-	}
-
-	if (style.foregroundColor) {
-		fg = style.foregroundColor;
-	}
-
-	if (style.backgroundColor) {
-		bg = style.backgroundColor;
-
-		// background color contains "bg" prefix, e.g. "bgRed"
-		if (/^bg[A-Z]/.test(bg)) {
-			bg = bg.substring(2).toLowerCase();
-		}
-	}
-
-	if (style.inverse) {
-		if (fg) classes.push(styles[`bg-${fg}`]);
-		if (bg) classes.push(styles[`fg-${bg}`]);
-	} else {
-		if (fg) classes.push(styles[`fg-${fg}`]);
-		if (bg) classes.push(styles[`bg-${bg}`]);
-	}
+	if (fgName) classes.push(styles[`fg-${fgName}`]);
+	if (bgName) classes.push(styles[`bg-${bgName}`]);
 
 	return classes.join(' ') || undefined;
 }
 
 export default function Ansi({ children }: AnsiProps) {
-	const parsed = parseAnsi(children);
-	const chunks = parsed.chunks
-		.filter((c) => ['text', 'newline'].includes(c.type))
-		.map((chunk, i) => {
-			if (chunk.type === 'newline') {
-				return '\n';
-			}
-			return (
-				<span className={mapClassNames(chunk.style)} key={i}>
-					{chunk.value}
-				</span>
-			);
-		});
-	return <>{chunks}</>;
+	const parts = Anser.ansiToJson(children, {
+		use_classes: false,
+	}) as AnserPart[];
+	return (
+		<>
+			{parts.map((part, i) => {
+				if (!part.content) return null;
+				return (
+					<span key={i} className={classesFor(part)}>
+						{part.content}
+					</span>
+				);
+			})}
+		</>
+	);
 }
