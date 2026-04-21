@@ -8,3 +8,7 @@ package-lock.json
 /lib/*.so*
 /.vscode
 .vercel
+.react-router
+build
+.DS_Store
+*.log
