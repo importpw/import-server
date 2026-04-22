@@ -1,8 +1,8 @@
 'use client';
 
-import { Streamdown } from 'streamdown';
+import { CodeBlock, Streamdown } from 'streamdown';
 import emoji from 'emoji-dictionary';
-import { isValidElement, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 import MarkdownImage from './image';
 import MarkdownLink from './link';
@@ -41,18 +41,62 @@ function transformEmoji(children: ReactNode): ReactNode {
 }
 
 /**
- * Walks the children of streamdown's default `<pre><code>` rendering to find
- * the raw text of a code block. Streamdown + Shiki wrap each token in its
- * own element so we collect the textContent recursively.
+ * Override for `components.code`. Streamdown invokes this for BOTH inline
+ * spans (`` `foo` ``) and block fences (```` ```lang\n…\n``` ````), so we
+ * must distinguish them ourselves:
+ *
+ * - Block fences come through with a `className="language-xxx"` class.
+ *   We render them via Streamdown's exported `<CodeBlock>` (chrome + Shiki
+ *   highlighting), and additionally wrap `#!`-prefixed blocks in our
+ *   `<CodeExample>` for the "Run this code" popup.
+ * - Inline spans have no language class; we hand them back to the caller
+ *   via the default Streamdown inline-code classes so the muted pill
+ *   styling is preserved.
  */
-function getCodeText(node: ReactNode): string {
-	if (typeof node === 'string') return node;
-	if (typeof node === 'number') return String(node);
-	if (Array.isArray(node)) return node.map(getCodeText).join('');
-	if (isValidElement<{ children?: ReactNode }>(node)) {
-		return getCodeText(node.props.children);
+function Code({
+	className,
+	children,
+	...rest
+}: {
+	className?: string;
+	children?: ReactNode;
+}) {
+	const raw =
+		typeof children === 'string' ? children : String(children ?? '');
+	const isBlock = /\blanguage-/.test(className ?? '');
+
+	if (!isBlock) {
+		return (
+			<code
+				{...(rest as any)}
+				className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm"
+				data-streamdown="inline-code"
+			>
+				{children}
+			</code>
+		);
 	}
-	return '';
+
+	const code = raw.replace(/\n$/, '');
+	const match = /language-(\w+)/.exec(className ?? '');
+	const language = match?.[1] ?? 'text';
+
+	// `code` carries the raw text to highlight. `children`, if passed,
+	// becomes Streamdown's action-button slot (copy/download), which we
+	// leave empty so it falls back to the defaults.
+	const block = (
+		<CodeBlock
+			{...(rest as any)}
+			className={className}
+			language={language}
+			code={code}
+		/>
+	);
+
+	if (code.trimStart().startsWith('#!')) {
+		return <CodeExample code={code}>{block}</CodeExample>;
+	}
+	return block;
 }
 
 export default function MarkdownClient({
@@ -78,22 +122,7 @@ export default function MarkdownClient({
 				p: ({ children, ...rest }: any) => (
 					<p {...rest}>{transformEmoji(children)}</p>
 				),
-				// Wrap `#!`-prefixed block code in a "Run this code" popup.
-				// Streamdown's default `code` component handles syntax
-				// highlighting + the copy/download UI; we re-render it and
-				// detect shebang blocks by reading the raw text from the
-				// children that remark passes through.
-				pre: ({ children, ...rest }: any) => {
-					const text = getCodeText(children);
-					if (text.trimStart().startsWith('#!')) {
-						return (
-							<CodeExample code={text}>
-								<pre {...rest}>{children}</pre>
-							</CodeExample>
-						);
-					}
-					return <pre {...rest}>{children}</pre>;
-				},
+				code: Code as any,
 			}}
 		>
 			{body}

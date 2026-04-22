@@ -20,6 +20,7 @@
 		"anser": "^2.3.0",
 		"emoji-dictionary": "^1.0.9",
 		"execa": "^4.1.0",
+		"geist": "^1.7.0",
 		"lru-cache": "^11.3.5",
 		"next": "^16.2.4",
 		"react": "^19.0.0",
