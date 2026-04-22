@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+	transpilePackages: ['shiki'],
 	async rewrites() {
 		return [
 			// The root path `/` displays the default repo (importpw/import).

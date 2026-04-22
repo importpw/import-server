@@ -27,9 +27,9 @@
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-inspector": "^6.0.2",
-		"react-markdown": "^9.0.1",
 		"react-new-window": "^1.0.1",
-		"react-syntax-highlighter": "^15.5.0"
+		"shiki": "^4.0.2",
+		"streamdown": "^2.5.0"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.0.0",
@@ -37,7 +37,6 @@
 		"@types/node-fetch": "^2.6.11",
 		"@types/react": "^19.0.0",
 		"@types/react-dom": "^19.0.0",
-		"@types/react-syntax-highlighter": "^15.5.13",
 		"tailwindcss": "^4.0.0",
 		"typescript": "^5.6.0"
 	}

@@ -2,13 +2,9 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Markdown from 'react-markdown';
 
 import NoDocs from '../../components/no-docs';
-import BlockPre, { InlineCode } from '../../components/code';
-import MarkdownImage from '../../components/image';
-import MarkdownLink from '../../components/link';
-import MarkdownText from '../../components/text';
+import MarkdownClient from '../../components/markdown';
 import Vercel from '../../components/icons/vercel';
 import Arrow from '../../components/icons/arrow';
 import GitHub from '../../components/icons/github';
@@ -140,43 +136,12 @@ export default async function Page({ params }: PageProps) {
 		(typeof foundEntrypoint !== 'boolean' || foundEntrypoint)
 	) {
 		content = (
-			<Markdown
-				skipHtml={false}
-				components={{
-					pre: (props) => <BlockPre {...(props as any)} />,
-					code: (props) => <InlineCode {...(props as any)} />,
-					img: (props) => <MarkdownImage {...(props as any)} />,
-					a: (props) => (
-						<MarkdownLink
-							org={org}
-							repo={repo}
-							asPath={pathname}
-							href={(props as any).href}
-						>
-							{(props as any).children}
-						</MarkdownLink>
-					),
-					p: ({ children }) => (
-						<p>
-							{Array.isArray(children)
-								? children.map((c, i) =>
-										typeof c === 'string' ? (
-											<MarkdownText key={i}>
-												{c}
-											</MarkdownText>
-										) : (
-											c
-										)
-								  )
-								: typeof children === 'string'
-								? <MarkdownText>{children}</MarkdownText>
-								: children}
-						</p>
-					),
-				}}
-			>
-				{body}
-			</Markdown>
+			<MarkdownClient
+				body={body}
+				org={org}
+				repo={repo}
+				asPath={pathname}
+			/>
 		);
 	} else {
 		content = <NoDocs {...(data as any)} />;

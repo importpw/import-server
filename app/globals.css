@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@source "../node_modules/streamdown/dist/*.js";
 
 @theme {
 	--font-sans:
@@ -138,17 +139,27 @@ img {
 	line-height: 20px;
 }
 
+.markdown-body table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+}
+
 .markdown-body td {
 	font-size: 14px;
 	font-family: var(--font-sans);
 	line-height: 24px;
 	padding: 10px;
+	border-top: 1px solid #eaeaea;
+	vertical-align: top;
 }
 
 .markdown-body th {
+	font-size: 14px;
+	font-weight: 600;
+	text-align: left;
+	padding: 10px;
 	border-bottom: 1px solid #eaeaea;
-	padding-bottom: 20px;
-	margin-bottom: 20px;
 }
 
 /* Highlight.js theme (atelier cave-ish, keeping the old defaults) */
