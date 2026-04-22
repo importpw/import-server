@@ -209,10 +209,13 @@ img {
 	 */
 
 @theme inline {
-	--font-heading:
-		var(--font-sans);
-	--font-sans:
-		var(--font-sans);
+	/* Note: --font-sans and --font-mono are defined in the earlier
+	 * @theme inline block at the top of this file (they route through
+	 * the Geist CSS variables set on <html> by app/layout.tsx). Don't
+	 * redefine them here — shadcn's init template ships with a
+	 * self-referential `--font-sans: var(--font-sans)` which stomps
+	 * the Geist wiring and falls back to a serif UA default.
+	 */
 	--color-sidebar-ring:
 		var(--sidebar-ring);
 	--color-sidebar-border:
