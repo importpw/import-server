@@ -1,14 +1,78 @@
-// @ts-ignore - no types available
-import GitHub from 'github-api';
 import { LRUCache } from 'lru-cache';
 import { createHash } from 'node:crypto';
 import { basename, extname } from 'node:path';
 
-const ghInstances = new Map<string | undefined, any>();
+/**
+ * Minimal GitHub REST client for the two endpoints we actually use:
+ * - GET /repos/:org/:repo           (for the repo description)
+ * - GET /repos/:org/:repo/git/trees/:committish
+ *
+ * Previously this module used `github-api`, which pulls in `axios@0.21`,
+ * which pulls in `url.parse()`, which emits a DEP0169 warning on modern
+ * Node. A hand-rolled fetch() wrapper is simpler, drops two transitive
+ * deps, and avoids the warning entirely.
+ */
+
+interface GithubResponse<T> {
+	status: number;
+	data: T;
+}
+
+interface RepoDetails {
+	description: string | null;
+	// …a lot more fields we don't use.
+}
+
+interface TreeEntry {
+	path: string;
+	type: string;
+	sha: string;
+	[key: string]: unknown;
+}
+
+interface TreeResponse {
+	sha: string;
+	tree: TreeEntry[];
+	truncated: boolean;
+}
+
+async function githubGet<T>(
+	path: string,
+	token: string | undefined
+): Promise<GithubResponse<T>> {
+	const headers: Record<string, string> = {
+		Accept: 'application/vnd.github+json',
+		'X-GitHub-Api-Version': '2022-11-28',
+		'User-Agent': 'import-server',
+	};
+	if (token) headers.Authorization = `Bearer ${token}`;
+
+	const res = await fetch(`https://api.github.com${path}`, {
+		headers,
+		cache: 'no-store',
+	});
+
+	// Only parse the body on success. For non-2xx statuses we still want
+	// the status code so callers can distinguish "repo not found" (404)
+	// from "rate-limited" (403) etc.
+	let data: T | undefined;
+	if (res.ok) {
+		data = (await res.json()) as T;
+	}
+	if (!res.ok) {
+		const body = await res.text().catch(() => '');
+		const err = new Error(
+			`${res.status} ${res.statusText} from GET ${path}: ${body}`
+		) as Error & { status: number };
+		err.status = res.status;
+		throw err;
+	}
+	return { status: res.status, data: data as T };
+}
 
 interface CachedRepo {
-	details: any;
-	tree: any;
+	details: GithubResponse<RepoDetails>;
+	tree: GithubResponse<TreeResponse>;
 }
 
 /**
@@ -37,7 +101,6 @@ function tokenFingerprint(token: string | undefined): string {
 }
 
 function getRepoCached(
-	gh: any,
 	org: string,
 	repo: string,
 	committish: string,
@@ -48,10 +111,19 @@ function getRepoCached(
 	if (cached) return cached;
 
 	const p = (async () => {
-		const ghRepo = gh.getRepo(org, repo);
 		const [details, tree] = await Promise.all([
-			ghRepo.getDetails(),
-			ghRepo.getTree(committish),
+			githubGet<RepoDetails>(
+				`/repos/${encodeURIComponent(org)}/${encodeURIComponent(
+					repo
+				)}`,
+				token
+			),
+			githubGet<TreeResponse>(
+				`/repos/${encodeURIComponent(org)}/${encodeURIComponent(
+					repo
+				)}/git/trees/${encodeURIComponent(committish)}`,
+				token
+			),
 		]);
 		return { details, tree };
 	})();
@@ -61,11 +133,6 @@ function getRepoCached(
 	// of serving the rejected promise for the rest of the TTL window.
 	p.catch(() => repoCache.delete(key));
 	return p;
-}
-
-interface TreeEntry {
-	path: string;
-	[key: string]: unknown;
 }
 
 function findFile(tree: TreeEntry[], name: string): string | null {
@@ -112,37 +179,28 @@ export default async function resolveImport(
 	{ org, repo, file, committish = 'master' }: ResolveInput = {},
 	{ defaultOrg, defaultRepo, token }: ResolveOpts
 ): Promise<ResolvedImport> {
-	let gh = ghInstances.get(token);
-	if (!gh) {
-		gh = new GitHub({ token });
-		ghInstances.set(token, gh);
-	}
-
 	if (!org) org = defaultOrg;
 	if (!repo) repo = defaultRepo;
 
 	let sha: string | undefined;
-	let tree: any;
+	let tree: TreeResponse | undefined;
 	let match: string | null;
-	let repoDetails: any;
 	let repoDescription: string | undefined;
 	let foundRepo = false;
 	let foundCommit = false;
 
 	try {
-		const cached = await getRepoCached(gh, org, repo, committish, token);
-		repoDetails = cached.details;
-		tree = cached.tree;
-		if (repoDetails.status === 200) {
-			repoDescription = repoDetails.data.description;
+		const cached = await getRepoCached(org, repo, committish, token);
+		if (cached.details.status === 200) {
+			repoDescription = cached.details.data.description ?? undefined;
 			foundRepo = true;
 		}
-		tree = tree.data;
+		tree = cached.tree.data;
 	} catch (err: any) {
 		// Rate-limit errors (403) are noisy during local dev without a
 		// token — log them at `warn` level with a friendly hint instead of
 		// as an error, which Next's dev overlay would surface.
-		const status = err?.response?.status ?? err?.status;
+		const status = err?.status;
 		if (status === 403 && /rate limit/i.test(err?.message ?? '')) {
 			console.warn(
 				`[resolve] GitHub API rate limit hit for ${org}/${repo}${
@@ -151,7 +209,9 @@ export default async function resolveImport(
 						: '.'
 				}`
 			);
-		} else {
+		} else if (status !== 404) {
+			// 404 is "repo doesn't exist / isn't visible to this token" —
+			// not an error worth surfacing to the dev overlay.
 			console.error(err);
 		}
 	}

@@ -1,11 +1,10 @@
 import execa from 'execa';
-import fetch from 'node-fetch';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { createWriteStream, createReadStream } from 'node:fs';
 import { mkdir, rm, writeFile, open } from 'node:fs/promises';
-import once from '@tootallnate/once';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,12 +13,15 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 async function download(url: string, dest: string) {
 	const res = await fetch(url);
-	if (!res.body) {
-		throw new Error(`No body in download response for ${url}`);
+	if (!res.ok || !res.body) {
+		throw new Error(
+			`Failed to download ${url}: ${res.status} ${res.statusText}`
+		);
 	}
-	const ws = createWriteStream(dest, { mode: 0o777 });
-	(res.body as unknown as NodeJS.ReadableStream).pipe(ws);
-	await once(ws, 'close');
+	await pipeline(
+		Readable.fromWeb(res.body as any),
+		createWriteStream(dest, { mode: 0o777 })
+	);
 }
 
 const importBinPath = (async () => {
