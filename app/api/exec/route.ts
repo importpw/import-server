@@ -109,9 +109,15 @@ async function handle(request: Request): Promise<Response> {
 			},
 		]);
 
+		// Execute the script via its shebang so that `#!/usr/bin/env
+		// import` (or any other shebang the user wrote) takes effect.
+		// This matters for the typical demo case, where `import` in the
+		// shebang is what defines `import` as a shell function in the
+		// script's scope — running the body with plain `bash input.sh`
+		// would bypass that and re-invoke `import` as an executable for
+		// every `import "..."` line inside, which breaks the design.
 		const proc = await sandbox.runCommand({
-			cmd: 'bash',
-			args: ['input.sh'],
+			cmd: './input.sh',
 			cwd: '/vercel/sandbox',
 			env: {
 				// Minimal env: nothing from the host. `import` itself
