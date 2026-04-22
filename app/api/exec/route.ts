@@ -16,9 +16,9 @@ export const dynamic = 'force-dynamic';
  *   of the parent function's secrets — GITHUB_CLIENT_SECRET, AUTH_SECRET,
  *   the GITHUB_TOKEN fallback PAT, Vercel project/OIDC tokens, etc. — are
  *   visible to the user script).
- * - Private-subnet egress denied so the script can't pivot into the VPC or
- *   metadata services. Public HTTPS stays open so the `import` command can
- *   still `curl raw.githubusercontent.com` to pull modules.
+ * - Network isolation handled by the Vercel Sandbox platform itself —
+ *   the microVM has its own network namespace with no access to the
+ *   parent function's VPC or metadata endpoints.
  * - An ephemeral filesystem that's destroyed on `sandbox.stop()`.
  * - A 30-second hard timeout (plenty for a demo script; nothing survives
  *   beyond the HTTP request).
@@ -71,31 +71,9 @@ async function handle(request: Request): Promise<Response> {
 	const sandbox = await Sandbox.create({
 		runtime: 'node22',
 		timeout: SCRIPT_TIMEOUT_MS,
-		// Allow public Internet egress (so `curl` / `import` can fetch
-		// modules from GitHub), but deny the handful of address ranges
-		// that would be meaningful attack vectors for SSRF:
-		//
-		// - Private RFC1918 (10/8, 172.16/12, 192.168/16) — VPC-internal
-		//   services on the Vercel Sandbox network.
-		// - The two AWS metadata IPs (169.254.169.254 IMDS and
-		//   169.254.170.2 ECS task creds). We intentionally don't deny
-		//   all of 169.254/16 because the AWS VPC DNS resolver lives at
-		//   169.254.169.253 and blocking that breaks every name lookup
-		//   inside the sandbox.
-		// - 127.0.0.0/8 is NOT denied: systemd-resolved on AL2023
-		//   forwards DNS through 127.0.0.53, and blocking that would
-		//   also kill DNS inside the sandbox.
-		networkPolicy: {
-			subnets: {
-				deny: [
-					'10.0.0.0/8',
-					'172.16.0.0/12',
-					'192.168.0.0/16',
-					'169.254.169.254/32',
-					'169.254.170.2/32',
-				],
-			},
-		},
+		// Use Vercel Sandbox's default network policy — the platform
+		// already isolates each sandbox in its own Firecracker microVM
+		// with no access to the parent function's VPC / metadata.
 		// Intentionally empty. The sandbox SDK does NOT inherit
 		// process.env by default, but set this explicitly so any future
 		// SDK changes can't regress us into leaking secrets.
