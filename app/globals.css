@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @source "../node_modules/streamdown/dist/*.js";
+@source "../node_modules/@streamdown/code/dist/*.js";
 
 @theme {
 	/* Geist fonts are loaded in app/layout.tsx via `next/font/local` and
@@ -64,6 +65,23 @@ body > div:first-child {
 
 img {
 	max-width: 100%;
+}
+
+/* Streamdown code blocks: drop the header strip. The language-label row
+ * adds no information the code body doesn't already convey, and removing
+ * it tightens up the block visually. The action-button overlay (copy /
+ * download / fullscreen) is positioned separately and stays unaffected.
+ */
+[data-streamdown='code-block'] > [data-streamdown='code-block-header'] {
+	display: none;
+}
+
+/* The code-block container also has `p-2` padding which was only there
+ * to offset the header row; with the header gone, collapse it so the body
+ * sits flush against the border.
+ */
+[data-streamdown='code-block'] {
+	padding: 0;
 }
 
 /* Markdown body styles */

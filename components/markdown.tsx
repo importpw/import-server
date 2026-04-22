@@ -1,6 +1,7 @@
 'use client';
 
 import { CodeBlock, Streamdown } from 'streamdown';
+import { code } from '@streamdown/code';
 import emoji from 'emoji-dictionary';
 import { type ReactNode } from 'react';
 
@@ -107,6 +108,7 @@ export default function MarkdownClient({
 }: MarkdownProps) {
 	return (
 		<Streamdown
+			plugins={{ code }}
 			components={{
 				a: (props: any) => (
 					<MarkdownLink
