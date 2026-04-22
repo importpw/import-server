@@ -3,16 +3,17 @@ import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import NoDocs from '../../components/no-docs';
-import MarkdownClient from '../../components/markdown';
-import UserButton from '../../components/user-button';
-import Vercel from '../../components/icons/vercel';
-import Arrow from '../../components/icons/arrow';
-import GitHub from '../../components/icons/github';
-import Logotype from '../../components/icons/import';
+import NoDocs from '@/components/no-docs';
+import MarkdownClient from '@/components/markdown';
+import UserButton from '@/components/user-button';
+import ThemeToggle from '@/components/theme-toggle';
+import Vercel from '@/components/icons/vercel';
+import Arrow from '@/components/icons/arrow';
+import GitHub from '@/components/icons/github';
+import Logotype from '@/components/icons/import';
 
-import { getSession } from '../../lib/auth';
-import { loadFromPath, resolveOpts } from '../../lib/load';
+import { getSession } from '@/lib/auth';
+import { loadFromPath, resolveOpts } from '@/lib/load';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,11 +121,13 @@ export default async function Page({ params }: PageProps) {
 
 	if (resolveOpts.defaultRepo !== repo) {
 		if (resolveOpts.defaultOrg !== org) {
-			arrow = <Arrow className="mx-2.5 h-full w-3 fill-[#999]" />;
+			arrow = (
+				<Arrow className="mx-2.5 h-full w-3 fill-muted-foreground" />
+			);
 			orgLogo = (
 				// eslint-disable-next-line @next/next/no-img-element
 				<img
-					className="h-7 w-7 rounded-[5px] border border-[#eaeaea]"
+					className="h-7 w-7 rounded-[5px] border border-border"
 					src={avatar}
 					alt=""
 				/>
@@ -153,15 +156,19 @@ export default async function Page({ params }: PageProps) {
 	}
 
 	return (
-		<div className="markdown-body root">
+		<div className="root">
 			<div className="sticky top-0 z-10 overflow-hidden pb-2.5 text-center">
-				<div className="relative mx-auto flex items-center justify-center border-b border-[#eaeaea] bg-white pt-5 pb-5 shadow-[0px_0px_10px_0px_rgba(0,0,0,0.12)]">
-					<Link href="/importpw/import">
+				<div className="relative mx-auto flex items-center justify-center border-b border-border bg-background pt-5 pb-5 shadow-sm">
+					<Link
+						href="/importpw/import"
+						className="text-foreground"
+					>
 						<Logotype className="w-[35px]" />
 					</Link>
 					{arrow}
 					{orgLogo}
-					<div className="absolute top-1/2 right-4 -translate-y-1/2">
+					<div className="absolute top-1/2 right-4 flex -translate-y-1/2 items-center gap-2">
+						<ThemeToggle />
 						<UserButton
 							user={
 								session
@@ -177,25 +184,28 @@ export default async function Page({ params }: PageProps) {
 				</div>
 			</div>
 
-			<div className="mx-auto mt-[50px] mb-[100px] max-w-[650px] px-5">
+			<div className="markdown-body mx-auto mt-[50px] mb-[100px] max-w-[650px] px-5">
 				{content}
 			</div>
 
-			<div className="border-t border-[#eaeaea] py-10 text-black">
+			<div className="border-t border-border py-10 text-foreground">
 				<div className="mx-auto flex max-w-[900px] justify-between max-md:flex-col max-md:items-center">
 					<div>
 						<a
-							className="flex items-center text-sm text-black max-md:mb-[30px]"
+							className="flex items-center text-sm text-foreground max-md:mb-[30px]"
 							href={ghUrl}
 						>
 							View on GitHub
-							<GitHub className="ml-2.5 h-[18px]" />
+							<GitHub className="ml-2.5 h-[18px] fill-foreground" />
 						</a>
 					</div>
-					<div className="flex whitespace-pre-wrap text-sm text-[#666]">
+					<div className="flex items-center whitespace-pre-wrap text-sm text-muted-foreground">
 						Crafted by{' '}
-						<a className="text-black" href="https://vercel.com">
-							<Vercel className="mt-0.5 ml-0.5 h-[1em]" />
+						<a
+							className="text-foreground"
+							href="https://vercel.com"
+						>
+							<Vercel className="mt-0.5 ml-0.5 h-[1em] fill-foreground" />
 						</a>
 					</div>
 				</div>

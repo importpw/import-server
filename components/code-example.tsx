@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
+import { Play } from 'lucide-react';
 import NewWindow from 'react-new-window';
+
+import { Button } from '@/components/ui/button';
 import CodeExec from './code-exec';
 
 interface CodeExampleProps {
@@ -15,16 +18,15 @@ export default function CodeExample({ code, children }: CodeExampleProps) {
 	return (
 		<div className="relative">
 			{children}
-			<a
-				className="absolute top-0 right-0 border-b border-l border-[#eaeaea] p-1.5 text-xs"
-				onClick={(e) => {
-					e.preventDefault();
-					setShowing(true);
-				}}
-				href="#"
+			<Button
+				variant="ghost"
+				size="xs"
+				className="absolute top-2 right-2 z-10"
+				onClick={() => setShowing(true)}
 			>
+				<Play />
 				Run this code
-			</a>
+			</Button>
 			{showing && (
 				<NewWindow
 					center="parent"

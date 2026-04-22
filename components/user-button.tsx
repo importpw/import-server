@@ -1,6 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { LogOut, User } from 'lucide-react';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import GitHubIcon from '@/components/icons/github';
 
 interface UserButtonProps {
 	user:
@@ -13,58 +25,69 @@ interface UserButtonProps {
 }
 
 export default function UserButton({ user, returnTo }: UserButtonProps) {
-	const [open, setOpen] = useState(false);
 	const encoded = encodeURIComponent(returnTo || '/');
 
 	if (!user) {
 		return (
-			<a
-				href={`/api/auth/login?return_to=${encoded}`}
-				className="rounded-md border border-[#eaeaea] px-3 py-1 text-xs font-medium text-black hover:bg-[#fafafa]"
-			>
-				Sign in with GitHub
-			</a>
+			<Button asChild variant="outline" size="sm">
+				<a
+					href={`/api/auth/login?return_to=${encoded}`}
+					className="text-foreground"
+				>
+					<GitHubIcon />
+					Sign in
+				</a>
+			</Button>
 		);
 	}
 
 	return (
-		<div className="relative">
-			<button
-				type="button"
-				onClick={() => setOpen((v) => !v)}
-				className="flex items-center gap-1.5 rounded-full border border-[#eaeaea] p-0.5 pr-2 text-xs text-black hover:bg-[#fafafa]"
-				aria-haspopup="menu"
-				aria-expanded={open}
-			>
-				{/* eslint-disable-next-line @next/next/no-img-element */}
-				<img
-					src={user.avatarUrl}
-					alt=""
-					className="h-5 w-5 rounded-full"
-				/>
-				<span>{user.login}</span>
-			</button>
-			{open && (
-				<div
-					role="menu"
-					className="absolute right-0 mt-1.5 min-w-[140px] rounded-md border border-[#eaeaea] bg-white py-1 text-xs shadow-md"
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild>
+				<Button
+					variant="ghost"
+					size="sm"
+					className="h-auto gap-2 px-1 py-1"
 				>
+					<Avatar size="sm">
+						<AvatarImage src={user.avatarUrl} alt={user.login} />
+						<AvatarFallback>
+							{user.login.slice(0, 1).toUpperCase()}
+						</AvatarFallback>
+					</Avatar>
+					<span className="text-sm">{user.login}</span>
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent align="end" className="w-48">
+				<DropdownMenuLabel className="font-normal">
+					<div className="flex flex-col space-y-0.5">
+						<span className="text-sm font-medium">
+							{user.login}
+						</span>
+						<span className="text-xs text-muted-foreground">
+							Signed in via GitHub
+						</span>
+					</div>
+				</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild>
 					<a
 						href={`https://github.com/${user.login}`}
-						className="block px-3 py-1.5 text-black hover:bg-[#fafafa]"
-						role="menuitem"
+						target="_blank"
+						rel="noreferrer"
 					>
-						View profile
+						<User />
+						View GitHub profile
 					</a>
-					<a
-						href={`/api/auth/logout?return_to=${encoded}`}
-						className="block px-3 py-1.5 text-black hover:bg-[#fafafa]"
-						role="menuitem"
-					>
+				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild>
+					<a href={`/api/auth/logout?return_to=${encoded}`}>
+						<LogOut />
 						Sign out
 					</a>
-				</div>
-			)}
-		</div>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	);
 }

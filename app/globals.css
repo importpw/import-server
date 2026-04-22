@@ -1,14 +1,23 @@
 @import 'tailwindcss';
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+/* ---break---
+	 */
+@custom-variant dark (&:is(.dark *));
 @source "../node_modules/streamdown/dist/*.js";
 @source "../node_modules/@streamdown/code/dist/*.js";
 
-@theme {
+@theme inline {
 	/* Geist fonts are loaded in app/layout.tsx via `next/font/local` and
 	 * exposed as the `--font-geist-sans` / `--font-geist-mono` CSS
-	 * variables on <html>. We thread those into Tailwind's `font-sans` /
-	 * `font-mono` here so every utility class and component uses them by
-	 * default, with system fallbacks for the brief moment before the font
-	 * loads (and for any environment where the font fails to load at all).
+	 * variables on <html>. Thread those into Tailwind's `font-sans` /
+	 * `font-mono` here so every utility class and component uses them
+	 * by default, with system fallbacks for the brief moment before the
+	 * font loads.
+	 *
+	 * Design-token aliases (--color-background, --color-muted, etc.) and
+	 * their light / dark values are set by the shadcn-generated blocks
+	 * further down in this file.
 	 */
 	--font-sans:
 		var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI',
@@ -18,32 +27,16 @@
 		var(--font-geist-mono), Menlo, Monaco, 'Lucida Console',
 		'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
 		'Courier New', monospace;
+}
 
-	/* Streamdown uses shadcn/ui design tokens (bg-muted, bg-card, border-
-	 * border, etc.) for its code blocks, tables, buttons, etc. Define the
-	 * minimal set of light-theme tokens here so those utility classes
-	 * resolve to something instead of being no-ops.
-	 */
-	--color-background: #ffffff;
-	--color-foreground: #0a0a0a;
-	--color-card: #ffffff;
-	--color-card-foreground: #0a0a0a;
-	--color-popover: #ffffff;
-	--color-popover-foreground: #0a0a0a;
-	--color-primary: #0076ff;
-	--color-primary-foreground: #ffffff;
-	--color-secondary: #f5f5f5;
-	--color-secondary-foreground: #0a0a0a;
-	--color-muted: #f5f5f5;
-	--color-muted-foreground: #666666;
-	--color-accent: #f5f5f5;
-	--color-accent-foreground: #0a0a0a;
-	--color-destructive: #dc2626;
-	--color-destructive-foreground: #ffffff;
-	--color-border: #eaeaea;
-	--color-input: #eaeaea;
-	--color-ring: #0076ff;
-	--radius: 0.375rem;
+/* `color-scheme` lets the browser render native UI (scrollbars, form
+ * controls, focus rings on inputs) in the matching palette.
+ */
+:root {
+	color-scheme: light;
+}
+.dark {
+	color-scheme: dark;
 }
 
 html,
@@ -86,7 +79,7 @@ img {
 
 /* Markdown body styles */
 .markdown-body a {
-	color: #0076ff;
+	color: var(--color-primary);
 	text-decoration: none;
 }
 
@@ -107,7 +100,7 @@ img {
 }
 
 .markdown-body h1 a {
-	color: #000;
+	color: var(--color-foreground);
 }
 
 .markdown-body h2 {
@@ -138,8 +131,7 @@ img {
 .markdown-body hr {
 	border: 0;
 	height: 0;
-	border-top: 1px solid rgba(0, 0, 0, 0.1);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+	border-top: 1px solid var(--color-border);
 	margin-top: 75px;
 }
 
@@ -162,12 +154,11 @@ img {
 .markdown-body li::before {
 	content: '-';
 	margin-right: 10px;
-	color: #999;
+	color: var(--color-muted-foreground);
 }
 
 .markdown-body li code,
 .markdown-body p code {
-	color: rgb(212, 0, 255);
 	font-family: var(--font-mono);
 	font-size: 13px;
 	white-space: pre-wrap;
@@ -182,7 +173,7 @@ img {
 
 .markdown-body li a,
 .markdown-body a code {
-	color: #0076ff;
+	color: var(--color-primary);
 }
 
 .markdown-body pre code {
@@ -202,7 +193,7 @@ img {
 	font-family: var(--font-sans);
 	line-height: 24px;
 	padding: 10px;
-	border-top: 1px solid #eaeaea;
+	border-top: 1px solid var(--color-border);
 	vertical-align: top;
 }
 
@@ -211,76 +202,260 @@ img {
 	font-weight: 600;
 	text-align: left;
 	padding: 10px;
-	border-bottom: 1px solid #eaeaea;
+	border-bottom: 1px solid var(--color-border);
 }
 
-/* Highlight.js theme (atelier cave-ish, keeping the old defaults) */
-.hljs {
-	display: block;
-	overflow-x: auto;
-	color: #333;
-	background: #fff;
-	padding: 20px;
-	border: 1px solid #eaeaea;
-	border-radius: 5px;
-	margin: 20px 0;
+/* ---break---
+	 */
+
+@theme inline {
+	--font-heading:
+		var(--font-sans);
+	--font-sans:
+		var(--font-sans);
+	--color-sidebar-ring:
+		var(--sidebar-ring);
+	--color-sidebar-border:
+		var(--sidebar-border);
+	--color-sidebar-accent-foreground:
+		var(--sidebar-accent-foreground);
+	--color-sidebar-accent:
+		var(--sidebar-accent);
+	--color-sidebar-primary-foreground:
+		var(--sidebar-primary-foreground);
+	--color-sidebar-primary:
+		var(--sidebar-primary);
+	--color-sidebar-foreground:
+		var(--sidebar-foreground);
+	--color-sidebar:
+		var(--sidebar);
+	--color-chart-5:
+		var(--chart-5);
+	--color-chart-4:
+		var(--chart-4);
+	--color-chart-3:
+		var(--chart-3);
+	--color-chart-2:
+		var(--chart-2);
+	--color-chart-1:
+		var(--chart-1);
+	--color-ring:
+		var(--ring);
+	--color-input:
+		var(--input);
+	--color-border:
+		var(--border);
+	--color-destructive:
+		var(--destructive);
+	--color-accent-foreground:
+		var(--accent-foreground);
+	--color-accent:
+		var(--accent);
+	--color-muted-foreground:
+		var(--muted-foreground);
+	--color-muted:
+		var(--muted);
+	--color-secondary-foreground:
+		var(--secondary-foreground);
+	--color-secondary:
+		var(--secondary);
+	--color-primary-foreground:
+		var(--primary-foreground);
+	--color-primary:
+		var(--primary);
+	--color-popover-foreground:
+		var(--popover-foreground);
+	--color-popover:
+		var(--popover);
+	--color-card-foreground:
+		var(--card-foreground);
+	--color-card:
+		var(--card);
+	--color-foreground:
+		var(--foreground);
+	--color-background:
+		var(--background);
+	--radius-sm:
+		calc(var(--radius) * 0.6);
+	--radius-md:
+		calc(var(--radius) * 0.8);
+	--radius-lg:
+		var(--radius);
+	--radius-xl:
+		calc(var(--radius) * 1.4);
+	--radius-2xl:
+		calc(var(--radius) * 1.8);
+	--radius-3xl:
+		calc(var(--radius) * 2.2);
+	--radius-4xl:
+		calc(var(--radius) * 2.6);
 }
 
-.hljs-comment,
-.hljs-quote {
-	color: #777;
-	font-style: italic;
+/* ---break---
+	 */
+
+:root {
+	--background:
+		oklch(1 0 0);
+	--foreground:
+		oklch(0.145 0 0);
+	--card:
+		oklch(1 0 0);
+	--card-foreground:
+		oklch(0.145 0 0);
+	--popover:
+		oklch(1 0 0);
+	--popover-foreground:
+		oklch(0.145 0 0);
+	--primary:
+		oklch(0.205 0 0);
+	--primary-foreground:
+		oklch(0.985 0 0);
+	--secondary:
+		oklch(0.97 0 0);
+	--secondary-foreground:
+		oklch(0.205 0 0);
+	--muted:
+		oklch(0.97 0 0);
+	--muted-foreground:
+		oklch(0.556 0 0);
+	--accent:
+		oklch(0.97 0 0);
+	--accent-foreground:
+		oklch(0.205 0 0);
+	--destructive:
+		oklch(0.577 0.245 27.325);
+	--border:
+		oklch(0.922 0 0);
+	--input:
+		oklch(0.922 0 0);
+	--ring:
+		oklch(0.708 0 0);
+	--chart-1:
+		oklch(0.87 0 0);
+	--chart-2:
+		oklch(0.556 0 0);
+	--chart-3:
+		oklch(0.439 0 0);
+	--chart-4:
+		oklch(0.371 0 0);
+	--chart-5:
+		oklch(0.269 0 0);
+	--radius:
+		0.625rem;
+	--sidebar:
+		oklch(0.985 0 0);
+	--sidebar-foreground:
+		oklch(0.145 0 0);
+	--sidebar-primary:
+		oklch(0.205 0 0);
+	--sidebar-primary-foreground:
+		oklch(0.985 0 0);
+	--sidebar-accent:
+		oklch(0.97 0 0);
+	--sidebar-accent-foreground:
+		oklch(0.205 0 0);
+	--sidebar-border:
+		oklch(0.922 0 0);
+	--sidebar-ring:
+		oklch(0.708 0 0);
 }
 
-.hljs-keyword,
-.hljs-selector-tag,
-.hljs-subst {
-	color: #333;
-	font-weight: bold;
+/* ---break---
+	 */
+
+.dark {
+	--background:
+		oklch(0.145 0 0);
+	--foreground:
+		oklch(0.985 0 0);
+	--card:
+		oklch(0.205 0 0);
+	--card-foreground:
+		oklch(0.985 0 0);
+	--popover:
+		oklch(0.205 0 0);
+	--popover-foreground:
+		oklch(0.985 0 0);
+	--primary:
+		oklch(0.922 0 0);
+	--primary-foreground:
+		oklch(0.205 0 0);
+	--secondary:
+		oklch(0.269 0 0);
+	--secondary-foreground:
+		oklch(0.985 0 0);
+	--muted:
+		oklch(0.269 0 0);
+	--muted-foreground:
+		oklch(0.708 0 0);
+	--accent:
+		oklch(0.269 0 0);
+	--accent-foreground:
+		oklch(0.985 0 0);
+	--destructive:
+		oklch(0.704 0.191 22.216);
+	--border:
+		oklch(1 0 0 / 10%);
+	--input:
+		oklch(1 0 0 / 15%);
+	--ring:
+		oklch(0.556 0 0);
+	--chart-1:
+		oklch(0.87 0 0);
+	--chart-2:
+		oklch(0.556 0 0);
+	--chart-3:
+		oklch(0.439 0 0);
+	--chart-4:
+		oklch(0.371 0 0);
+	--chart-5:
+		oklch(0.269 0 0);
+	--sidebar:
+		oklch(0.205 0 0);
+	--sidebar-foreground:
+		oklch(0.985 0 0);
+	--sidebar-primary:
+		oklch(0.488 0.243 264.376);
+	--sidebar-primary-foreground:
+		oklch(0.985 0 0);
+	--sidebar-accent:
+		oklch(0.269 0 0);
+	--sidebar-accent-foreground:
+		oklch(0.985 0 0);
+	--sidebar-border:
+		oklch(1 0 0 / 10%);
+	--sidebar-ring:
+		oklch(0.556 0 0);
 }
 
-.hljs-number,
-.hljs-literal {
-	color: #777;
+/* ---break---
+	 */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+	}
+  body {
+    @apply bg-background text-foreground;
+	}
+  html {
+    @apply font-sans;
+	}
 }
 
-.hljs-title,
-.hljs-section,
-.hljs-selector-id {
-	color: #000;
-	font-weight: bold;
+/* Brand overrides: shadcn's `neutral` base palette uses a grayscale
+ * primary, but the site is import-blue. Override just `--primary` and
+ * `--ring` on top of shadcn's light/dark token sets.
+ */
+:root {
+	--primary: oklch(0.56 0.24 258);
+	--primary-foreground: oklch(1 0 0);
+	--ring: oklch(0.56 0.24 258);
 }
 
-.hljs-subst {
-	font-weight: normal;
-}
-
-.hljs-class .hljs-title,
-.hljs-type,
-.hljs-name {
-	color: #333;
-	font-weight: bold;
-}
-
-.hljs-tag {
-	color: #333;
-}
-
-.hljs-built_in,
-.hljs-builtin-name {
-	color: #000;
-	text-decoration: underline;
-}
-
-.hljs-meta {
-	color: #999;
-	font-weight: bold;
-}
-
-.hljs-emphasis {
-	font-style: italic;
-}
-
-.hljs-strong {
-	font-weight: bold;
+.dark {
+	--primary: oklch(0.7 0.19 250);
+	--primary-foreground: oklch(0.145 0 0);
+	--ring: oklch(0.7 0.19 250);
 }
