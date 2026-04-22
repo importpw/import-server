@@ -71,17 +71,28 @@ async function handle(request: Request): Promise<Response> {
 	const sandbox = await Sandbox.create({
 		runtime: 'node22',
 		timeout: SCRIPT_TIMEOUT_MS,
-		// Allow public Internet egress (so `curl`/`import` can fetch modules
-		// from GitHub), but deny private subnets to prevent SSRF into the
-		// VPC, cloud-metadata services (169.254.0.0/16), or link-local.
+		// Allow public Internet egress (so `curl` / `import` can fetch
+		// modules from GitHub), but deny the handful of address ranges
+		// that would be meaningful attack vectors for SSRF:
+		//
+		// - Private RFC1918 (10/8, 172.16/12, 192.168/16) — VPC-internal
+		//   services on the Vercel Sandbox network.
+		// - The two AWS metadata IPs (169.254.169.254 IMDS and
+		//   169.254.170.2 ECS task creds). We intentionally don't deny
+		//   all of 169.254/16 because the AWS VPC DNS resolver lives at
+		//   169.254.169.253 and blocking that breaks every name lookup
+		//   inside the sandbox.
+		// - 127.0.0.0/8 is NOT denied: systemd-resolved on AL2023
+		//   forwards DNS through 127.0.0.53, and blocking that would
+		//   also kill DNS inside the sandbox.
 		networkPolicy: {
 			subnets: {
 				deny: [
 					'10.0.0.0/8',
 					'172.16.0.0/12',
 					'192.168.0.0/16',
-					'169.254.0.0/16',
-					'127.0.0.0/8',
+					'169.254.169.254/32',
+					'169.254.170.2/32',
 				],
 			},
 		},
