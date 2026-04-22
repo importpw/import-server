@@ -1,21 +1,27 @@
 // @ts-ignore - no types available
 import GitHub from 'github-api';
+import { LRUCache } from 'lru-cache';
 import { basename, extname } from 'node:path';
 
 const ghInstances = new Map<string | undefined, any>();
 
-/**
- * In-memory TTL cache for the `{ details, tree }` tuple we fetch from
- * GitHub. Keeps dev hot-reloads and repeat requests from burning through
- * the unauthenticated 60/hour API quota.
- */
-const CACHE_TTL_MS = 60_000;
 interface CachedRepo {
-	expires: number;
 	details: any;
 	tree: any;
 }
-const repoCache = new Map<string, Promise<CachedRepo>>();
+
+/**
+ * In-memory LRU cache for the `{ details, tree }` tuple we fetch from
+ * GitHub. Keeps dev hot-reloads and repeat requests from burning through
+ * the unauthenticated 60/hour API quota.
+ *
+ * We cache the in-flight `Promise` (not the resolved value) so concurrent
+ * requests for the same key coalesce into a single GitHub API round trip.
+ */
+const repoCache = new LRUCache<string, Promise<CachedRepo>>({
+	max: 500,
+	ttl: 60_000,
+});
 
 function getRepoCached(
 	gh: any,
@@ -25,31 +31,20 @@ function getRepoCached(
 ): Promise<CachedRepo> {
 	const key = `${org}/${repo}@${committish}`;
 	const cached = repoCache.get(key);
-	if (cached) {
-		// Invalidate asynchronously; if the entry is still within its TTL,
-		// the promise will have already resolved.
-		cached.then(
-			(v) => {
-				if (Date.now() > v.expires) repoCache.delete(key);
-			},
-			() => repoCache.delete(key)
-		);
-		return cached;
-	}
+	if (cached) return cached;
+
 	const p = (async () => {
 		const ghRepo = gh.getRepo(org, repo);
 		const [details, tree] = await Promise.all([
 			ghRepo.getDetails(),
 			ghRepo.getTree(committish),
 		]);
-		return {
-			expires: Date.now() + CACHE_TTL_MS,
-			details,
-			tree,
-		};
+		return { details, tree };
 	})();
+
 	repoCache.set(key, p);
-	// If the lookup fails, drop the entry so the next request retries.
+	// On failure, evict immediately so the next request retries instead
+	// of serving the rejected promise for the rest of the TTL window.
 	p.catch(() => repoCache.delete(key));
 	return p;
 }

@@ -22,6 +22,7 @@
 		"emoji-dictionary": "^1.0.9",
 		"execa": "^4.1.0",
 		"github-api": "^3.4.0",
+		"lru-cache": "^11.3.5",
 		"next": "^16.2.4",
 		"node-fetch": "^2.7.0",
 		"react": "^19.0.0",
