@@ -39,7 +39,7 @@ export default function NoDocs(props: NoDocsProps) {
 				<h4>
 					The repository <code>{repoFull}</code> is not accessible
 				</h4>
-				<p>There are two possibilites:</p>
+				<p>There are two possibilities:</p>
 				<ul>
 					<li>
 						The repo does not exist - Please ensure that the repo

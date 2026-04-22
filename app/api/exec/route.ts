@@ -47,12 +47,10 @@ const importBinPath = (async () => {
 })();
 
 async function handle(request: Request): Promise<Response> {
-	const origCwd = process.cwd();
 	const workPath = join(tmpdir(), Math.random().toString(32).slice(2));
 
 	try {
 		await mkdir(workPath, { recursive: true });
-		process.chdir(workPath);
 
 		const inputFile = join(workPath, 'input.sh');
 		const bodyBuffer = Buffer.from(await request.arrayBuffer());
@@ -69,7 +67,11 @@ async function handle(request: Request): Promise<Response> {
 		};
 		if (isDev) delete env.CURL_CA_BUNDLE;
 
+		// Run the script with `cwd` set on the child process only — never
+		// mutate the parent process's cwd, because that would leak across
+		// concurrent requests on the same worker.
 		const proc = execa(inputFile, [], {
+			cwd: workPath,
 			env,
 			reject: false,
 			stdio: ['ignore', fh.fd, fh.fd],
@@ -82,10 +84,9 @@ async function handle(request: Request): Promise<Response> {
 			nodeStream
 		) as ReadableStream<Uint8Array>;
 
-		// Clean up after the stream is fully consumed
+		// Clean up after the stream is fully consumed.
 		nodeStream.on('close', async () => {
 			try {
-				process.chdir(origCwd);
 				await rm(workPath, { recursive: true, force: true });
 			} catch {
 				// ignore
@@ -102,7 +103,6 @@ async function handle(request: Request): Promise<Response> {
 		});
 	} catch (err) {
 		try {
-			process.chdir(origCwd);
 			await rm(workPath, { recursive: true, force: true });
 		} catch {
 			// ignore

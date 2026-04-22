@@ -234,7 +234,17 @@ export default async function resolveImport(
 	if (file) {
 		if (tree) {
 			match = findFile(tree.tree, params.file!);
-			params.foundFile = match === params.file;
+			if (match) {
+				// findFile() is case-insensitive and also matches on the
+				// basename (no extension), so the entry it returns may
+				// differ from the user-provided path. Use the matched
+				// path going forward so downstream URL construction hits
+				// the real file on GitHub.
+				params.file = match;
+				params.foundFile = true;
+			} else {
+				params.foundFile = false;
+			}
 		} else {
 			params.foundFile = false;
 		}
