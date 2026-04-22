@@ -4,6 +4,56 @@ import { basename, extname } from 'node:path';
 
 const ghInstances = new Map<string | undefined, any>();
 
+/**
+ * In-memory TTL cache for the `{ details, tree }` tuple we fetch from
+ * GitHub. Keeps dev hot-reloads and repeat requests from burning through
+ * the unauthenticated 60/hour API quota.
+ */
+const CACHE_TTL_MS = 60_000;
+interface CachedRepo {
+	expires: number;
+	details: any;
+	tree: any;
+}
+const repoCache = new Map<string, Promise<CachedRepo>>();
+
+function getRepoCached(
+	gh: any,
+	org: string,
+	repo: string,
+	committish: string
+): Promise<CachedRepo> {
+	const key = `${org}/${repo}@${committish}`;
+	const cached = repoCache.get(key);
+	if (cached) {
+		// Invalidate asynchronously; if the entry is still within its TTL,
+		// the promise will have already resolved.
+		cached.then(
+			(v) => {
+				if (Date.now() > v.expires) repoCache.delete(key);
+			},
+			() => repoCache.delete(key)
+		);
+		return cached;
+	}
+	const p = (async () => {
+		const ghRepo = gh.getRepo(org, repo);
+		const [details, tree] = await Promise.all([
+			ghRepo.getDetails(),
+			ghRepo.getTree(committish),
+		]);
+		return {
+			expires: Date.now() + CACHE_TTL_MS,
+			details,
+			tree,
+		};
+	})();
+	repoCache.set(key, p);
+	// If the lookup fails, drop the entry so the next request retries.
+	p.catch(() => repoCache.delete(key));
+	return p;
+}
+
 interface TreeEntry {
 	path: string;
 	[key: string]: unknown;
@@ -71,18 +121,30 @@ export default async function resolveImport(
 	let foundCommit = false;
 
 	try {
-		const ghRepo = gh.getRepo(org, repo);
-		[repoDetails, tree] = await Promise.all([
-			ghRepo.getDetails(),
-			ghRepo.getTree(committish),
-		]);
+		const cached = await getRepoCached(gh, org, repo, committish);
+		repoDetails = cached.details;
+		tree = cached.tree;
 		if (repoDetails.status === 200) {
 			repoDescription = repoDetails.data.description;
 			foundRepo = true;
 		}
 		tree = tree.data;
-	} catch (err) {
-		console.error(err);
+	} catch (err: any) {
+		// Rate-limit errors (403) are noisy during local dev without a
+		// token — log them at `warn` level with a friendly hint instead of
+		// as an error, which Next's dev overlay would surface.
+		const status = err?.response?.status ?? err?.status;
+		if (status === 403 && /rate limit/i.test(err?.message ?? '')) {
+			console.warn(
+				`[resolve] GitHub API rate limit hit for ${org}/${repo}${
+					!token
+						? '. Set GITHUB_TOKEN in .env.local to raise the limit to 5000/hour.'
+						: '.'
+				}`
+			);
+		} else {
+			console.error(err);
+		}
 	}
 	if (tree) {
 		sha = tree.sha;
