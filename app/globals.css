@@ -1,0 +1,286 @@
+@import 'tailwindcss';
+@source "../node_modules/streamdown/dist/*.js";
+@source "../node_modules/@streamdown/code/dist/*.js";
+
+@theme {
+	/* Geist fonts are loaded in app/layout.tsx via `next/font/local` and
+	 * exposed as the `--font-geist-sans` / `--font-geist-mono` CSS
+	 * variables on <html>. We thread those into Tailwind's `font-sans` /
+	 * `font-mono` here so every utility class and component uses them by
+	 * default, with system fallbacks for the brief moment before the font
+	 * loads (and for any environment where the font fails to load at all).
+	 */
+	--font-sans:
+		var(--font-geist-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+		'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+		'Helvetica Neue', sans-serif;
+	--font-mono:
+		var(--font-geist-mono), Menlo, Monaco, 'Lucida Console',
+		'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
+		'Courier New', monospace;
+
+	/* Streamdown uses shadcn/ui design tokens (bg-muted, bg-card, border-
+	 * border, etc.) for its code blocks, tables, buttons, etc. Define the
+	 * minimal set of light-theme tokens here so those utility classes
+	 * resolve to something instead of being no-ops.
+	 */
+	--color-background: #ffffff;
+	--color-foreground: #0a0a0a;
+	--color-card: #ffffff;
+	--color-card-foreground: #0a0a0a;
+	--color-popover: #ffffff;
+	--color-popover-foreground: #0a0a0a;
+	--color-primary: #0076ff;
+	--color-primary-foreground: #ffffff;
+	--color-secondary: #f5f5f5;
+	--color-secondary-foreground: #0a0a0a;
+	--color-muted: #f5f5f5;
+	--color-muted-foreground: #666666;
+	--color-accent: #f5f5f5;
+	--color-accent-foreground: #0a0a0a;
+	--color-destructive: #dc2626;
+	--color-destructive-foreground: #ffffff;
+	--color-border: #eaeaea;
+	--color-input: #eaeaea;
+	--color-ring: #0076ff;
+	--radius: 0.375rem;
+}
+
+html,
+body {
+	font-family: var(--font-sans);
+	text-rendering: optimizeLegibility;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body > div:first-child {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+img {
+	max-width: 100%;
+}
+
+/* Streamdown code blocks: drop the header strip. The language-label row
+ * adds no information the code body doesn't already convey, and removing
+ * it tightens up the block visually. The action-button overlay (copy /
+ * download / fullscreen) is positioned separately and stays unaffected.
+ */
+[data-streamdown='code-block'] > [data-streamdown='code-block-header'] {
+	display: none;
+}
+
+/* The code-block container also has `p-2` padding which was only there
+ * to offset the header row; with the header gone, collapse it so the body
+ * sits flush against the border.
+ */
+[data-streamdown='code-block'] {
+	padding: 0;
+}
+
+/* Markdown body styles */
+.markdown-body a {
+	color: #0076ff;
+	text-decoration: none;
+}
+
+.markdown-body a:hover {
+	text-decoration: underline;
+}
+
+.markdown-body a.external::after {
+	content: ' ↗';
+	font-size: 0.85em;
+}
+
+.markdown-body h1 {
+	font-size: 32px;
+	font-weight: 400;
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+.markdown-body h1 a {
+	color: #000;
+}
+
+.markdown-body h2 {
+	margin-top: 75px;
+	font-size: 24px;
+	font-weight: 400;
+}
+
+.markdown-body h2 code {
+	font-family: var(--font-sans);
+	font-weight: 600;
+}
+
+.markdown-body h2 code::before {
+	content: '`';
+}
+
+.markdown-body h2 code::after {
+	content: '`';
+}
+
+.markdown-body h3 {
+	margin-top: 50px;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.markdown-body hr {
+	border: 0;
+	height: 0;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+	margin-top: 75px;
+}
+
+.markdown-body p {
+	font-size: 14px;
+	line-height: 24px;
+}
+
+.markdown-body ul {
+	border-radius: 5px;
+	list-style-type: none;
+	padding: 0;
+}
+
+.markdown-body li {
+	font-size: 14px;
+	line-height: 24px;
+}
+
+.markdown-body li::before {
+	content: '-';
+	margin-right: 10px;
+	color: #999;
+}
+
+.markdown-body li code,
+.markdown-body p code {
+	color: rgb(212, 0, 255);
+	font-family: var(--font-mono);
+	font-size: 13px;
+	white-space: pre-wrap;
+}
+
+.markdown-body li code::before,
+.markdown-body p code::before,
+.markdown-body li code::after,
+.markdown-body p code::after {
+	content: '`';
+}
+
+.markdown-body li a,
+.markdown-body a code {
+	color: #0076ff;
+}
+
+.markdown-body pre code {
+	font-family: var(--font-mono);
+	font-size: 13px;
+	line-height: 20px;
+}
+
+.markdown-body table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+}
+
+.markdown-body td {
+	font-size: 14px;
+	font-family: var(--font-sans);
+	line-height: 24px;
+	padding: 10px;
+	border-top: 1px solid #eaeaea;
+	vertical-align: top;
+}
+
+.markdown-body th {
+	font-size: 14px;
+	font-weight: 600;
+	text-align: left;
+	padding: 10px;
+	border-bottom: 1px solid #eaeaea;
+}
+
+/* Highlight.js theme (atelier cave-ish, keeping the old defaults) */
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #333;
+	background: #fff;
+	padding: 20px;
+	border: 1px solid #eaeaea;
+	border-radius: 5px;
+	margin: 20px 0;
+}
+
+.hljs-comment,
+.hljs-quote {
+	color: #777;
+	font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+	color: #333;
+	font-weight: bold;
+}
+
+.hljs-number,
+.hljs-literal {
+	color: #777;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+	color: #000;
+	font-weight: bold;
+}
+
+.hljs-subst {
+	font-weight: normal;
+}
+
+.hljs-class .hljs-title,
+.hljs-type,
+.hljs-name {
+	color: #333;
+	font-weight: bold;
+}
+
+.hljs-tag {
+	color: #333;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+	color: #000;
+	text-decoration: underline;
+}
+
+.hljs-meta {
+	color: #999;
+	font-weight: bold;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
