@@ -1,6 +1,7 @@
 // @ts-ignore - no types available
 import GitHub from 'github-api';
 import { LRUCache } from 'lru-cache';
+import { createHash } from 'node:crypto';
 import { basename, extname } from 'node:path';
 
 const ghInstances = new Map<string | undefined, any>();
@@ -23,13 +24,26 @@ const repoCache = new LRUCache<string, Promise<CachedRepo>>({
 	ttl: 60_000,
 });
 
+/**
+ * Cheap fingerprint of a GitHub token for use as a cache-key component.
+ * Different tokens see different private repos, so we must not share
+ * cache entries across tokens. We hash to keep the full token out of the
+ * key (which would otherwise show up in debug logs / heap dumps) and
+ * truncate to keep the key short.
+ */
+function tokenFingerprint(token: string | undefined): string {
+	if (!token) return 'anon';
+	return createHash('sha256').update(token).digest('hex').slice(0, 12);
+}
+
 function getRepoCached(
 	gh: any,
 	org: string,
 	repo: string,
-	committish: string
+	committish: string,
+	token: string | undefined
 ): Promise<CachedRepo> {
-	const key = `${org}/${repo}@${committish}`;
+	const key = `${tokenFingerprint(token)}:${org}/${repo}@${committish}`;
 	const cached = repoCache.get(key);
 	if (cached) return cached;
 
@@ -116,7 +130,7 @@ export default async function resolveImport(
 	let foundCommit = false;
 
 	try {
-		const cached = await getRepoCached(gh, org, repo, committish);
+		const cached = await getRepoCached(gh, org, repo, committish, token);
 		repoDetails = cached.details;
 		tree = cached.tree;
 		if (repoDetails.status === 200) {

@@ -34,9 +34,11 @@ const nextConfig: NextConfig = {
 				destination: '/importpw/import',
 			},
 			// All other paths: route JSON/raw requests to dedicated route
-			// handlers so we can respond with non-HTML responses.
+			// handlers so we can respond with non-HTML responses. Exclude
+			// `/api/*` so our own route handlers (including auth endpoints)
+			// are never rewritten back into content-negotiation handlers.
 			{
-				source: '/:path*',
+				source: '/:path((?!api/).+)',
 				has: [
 					{
 						type: 'header',
@@ -44,10 +46,10 @@ const nextConfig: NextConfig = {
 						value: 'application/json',
 					},
 				],
-				destination: '/api/data/:path*',
+				destination: '/api/data/:path',
 			},
 			{
-				source: '/:path*',
+				source: '/:path((?!api/).+)',
 				has: [
 					{
 						type: 'header',
@@ -55,7 +57,7 @@ const nextConfig: NextConfig = {
 						value: '.*(curl|wget).*',
 					},
 				],
-				destination: '/api/raw/:path*',
+				destination: '/api/raw/:path',
 			},
 		];
 	},

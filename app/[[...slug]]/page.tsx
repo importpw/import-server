@@ -5,11 +5,13 @@ import Link from 'next/link';
 
 import NoDocs from '../../components/no-docs';
 import MarkdownClient from '../../components/markdown';
+import UserButton from '../../components/user-button';
 import Vercel from '../../components/icons/vercel';
 import Arrow from '../../components/icons/arrow';
 import GitHub from '../../components/icons/github';
 import Logotype from '../../components/icons/import';
 
+import { getSession } from '../../lib/auth';
 import { loadFromPath, resolveOpts } from '../../lib/load';
 
 export const dynamic = 'force-dynamic';
@@ -92,6 +94,7 @@ export default async function Page({ params }: PageProps) {
 	}
 
 	const h = await headers();
+	const session = await getSession();
 	const { data } = await loadFromPath(pathname, h);
 
 	const {
@@ -150,12 +153,25 @@ export default async function Page({ params }: PageProps) {
 	return (
 		<div className="markdown-body root">
 			<div className="sticky top-0 z-10 overflow-hidden pb-2.5 text-center">
-				<div className="mx-auto flex items-center justify-center border-b border-[#eaeaea] bg-white pt-5 pb-5 shadow-[0px_0px_10px_0px_rgba(0,0,0,0.12)]">
+				<div className="relative mx-auto flex items-center justify-center border-b border-[#eaeaea] bg-white pt-5 pb-5 shadow-[0px_0px_10px_0px_rgba(0,0,0,0.12)]">
 					<Link href="/importpw/import">
 						<Logotype className="w-[35px]" />
 					</Link>
 					{arrow}
 					{orgLogo}
+					<div className="absolute top-1/2 right-4 -translate-y-1/2">
+						<UserButton
+							user={
+								session
+									? {
+											login: session.login,
+											avatarUrl: session.avatarUrl,
+									  }
+									: null
+							}
+							returnTo={pathname}
+						/>
+					</div>
 				</div>
 			</div>
 

@@ -1,13 +1,14 @@
+import { getEffectiveGithubToken } from './auth';
 import parseImportPath from './parse-import-path';
 import resolveImport, { type ResolvedImport } from './resolve';
 import toURL from './to-github-raw-url';
 
+const DEFAULT_ORG = 'importpw';
+const DEFAULT_REPO = 'import';
+
 export const resolveOpts = {
-	defaultOrg: 'importpw',
-	defaultRepo: 'import',
-	get token() {
-		return process.env.GITHUB_TOKEN;
-	},
+	defaultOrg: DEFAULT_ORG,
+	defaultRepo: DEFAULT_REPO,
 };
 
 export interface LoadedData extends ResolvedImport {
@@ -53,7 +54,11 @@ export async function loadFromPath(
 		parsed.repo = resolveOpts.defaultRepo;
 	}
 
-	const resolved = (await resolveImport(parsed, resolveOpts)) as LoadedData;
+	const token = await getEffectiveGithubToken();
+	const resolved = (await resolveImport(parsed, {
+		...resolveOpts,
+		token,
+	})) as LoadedData;
 	resolved.asPath = pathname;
 	resolved.host =
 		headers.get('x-forwarded-host') ?? headers.get('host') ?? '';
