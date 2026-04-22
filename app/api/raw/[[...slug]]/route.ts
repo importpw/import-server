@@ -50,6 +50,12 @@ export async function GET(req: Request, ctx: RouteContext) {
 	const contentType = res.headers.get('content-type');
 	if (contentType) headers.set('Content-Type', contentType);
 	headers.set('Cache-Control', 's-maxage=60, stale-while-revalidate');
+	// Content-negotiation rewrites in next.config.ts route curl/wget
+	// requests for `/foo` here, but the Vercel CDN's cache key is the
+	// *original* request URL, not the rewritten destination. Vary on
+	// User-Agent so a Mozilla request to `/foo` can't be served the raw
+	// script that a previous curl request warmed the cache with.
+	headers.set('Vary', 'User-Agent');
 
 	return new Response(res.body, { status: res.status, headers });
 }

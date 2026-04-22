@@ -86,12 +86,14 @@ export default async function Page({ params }: PageProps) {
 	if (parsed.length === 1 && parsed[0] === 'favicon.ico') {
 		redirect(`https://github.com/${resolveOpts.defaultOrg}.png`);
 	}
-	if (
-		parsed.length === 2 &&
-		parsed[1] === 'favicon.ico'
-	) {
+	if (parsed.length === 2 && parsed[1] === 'favicon.ico') {
 		redirect(`https://github.com/${parsed[0]}.png`);
 	}
+
+	// Note: `?format=raw` / `?format=json` and `Accept: application/json`
+	// / `User-Agent: curl|wget` content negotiation is all handled by
+	// rewrites in next.config.ts. By the time a request reaches this
+	// page component, the caller has definitely asked for HTML.
 
 	const h = await headers();
 	const session = await getSession();
