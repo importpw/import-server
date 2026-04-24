@@ -45,7 +45,13 @@ async function githubGet<T>(
 		'X-GitHub-Api-Version': '2022-11-28',
 		'User-Agent': 'import-server',
 	};
-	if (token) headers.Authorization = `Bearer ${token}`;
+	// Defensive trim — any stray whitespace in the token (trailing
+	// newline from the env UI, leading space from a copy-paste, etc.)
+	// turns into a 401 "Bad credentials" at GitHub, regardless of
+	// whether the underlying token is valid. Belt + suspenders: the
+	// higher-level getEffectiveGithubToken() already trims.
+	const cleanToken = token?.trim();
+	if (cleanToken) headers.Authorization = `Bearer ${cleanToken}`;
 
 	const res = await fetch(`https://api.github.com${path}`, {
 		headers,
@@ -197,11 +203,11 @@ export default async function resolveImport(
 		}
 		tree = cached.tree.data;
 	} catch (err: any) {
-		// Rate-limit errors (403) are noisy during local dev without a
-		// token — log them at `warn` level with a friendly hint instead of
-		// as an error, which Next's dev overlay would surface.
 		const status = err?.status;
 		if (status === 403 && /rate limit/i.test(err?.message ?? '')) {
+			// Rate-limit errors (403) are noisy during local dev without
+			// a token — log at `warn` level with a friendly hint instead
+			// of `error`, which Next's dev overlay would surface.
 			console.warn(
 				`[resolve] GitHub API rate limit hit for ${org}/${repo}${
 					!token
@@ -209,9 +215,22 @@ export default async function resolveImport(
 						: '.'
 				}`
 			);
+		} else if (status === 401) {
+			// 401 Bad credentials: either the env-fallback token is
+			// invalid / expired / has a stray newline, or the caller's
+			// OAuth access_token has been revoked by the user on GitHub.
+			// Log enough to tell which one (without leaking the token
+			// itself) so prod incidents are diagnosable from the logs.
+			console.error(
+				`[resolve] GitHub rejected the credential for ${org}/${repo} ` +
+					`(tokenFingerprint=${tokenFingerprint(token)}, ` +
+					`tokenLen=${token?.length ?? 0}). ` +
+					'Check that GITHUB_TOKEN has no trailing whitespace and ' +
+					'that the token is still valid at https://github.com/settings/tokens.'
+			);
 		} else if (status !== 404) {
 			// 404 is "repo doesn't exist / isn't visible to this token" —
-			// not an error worth surfacing to the dev overlay.
+			// not an error worth surfacing.
 			console.error(err);
 		}
 	}
