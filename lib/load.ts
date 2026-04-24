@@ -1,4 +1,4 @@
-import { getEffectiveGithubToken } from './auth';
+import { cleanToken, getEffectiveGithubToken } from './auth';
 import parseImportPath from './parse-import-path';
 import resolveImport, { type ResolvedImport } from './resolve';
 import toURL from './to-github-raw-url';
@@ -30,6 +30,17 @@ export interface LoadResult {
 	 * request (used by the `raw` route handler to proxy the response).
 	 */
 	rawUrl: string;
+	/**
+	 * True when the caller's signed-in OAuth access_token was rejected
+	 * by GitHub with 401 — the user's session is dead (they revoked the
+	 * app's permission on github.com, or the token otherwise became
+	 * invalid). Callers should clear the session cookie so subsequent
+	 * requests fall back to anonymous / env-token resolution.
+	 *
+	 * In this case the resolution has already been retried with the
+	 * anonymous-fallback token, so `data` + `rawUrl` are still valid.
+	 */
+	sessionRevoked?: boolean;
 }
 
 /**
@@ -54,11 +65,39 @@ export async function loadFromPath(
 		parsed.repo = resolveOpts.defaultRepo;
 	}
 
-	const token = await getEffectiveGithubToken();
-	const resolved = (await resolveImport(parsed, {
-		...resolveOpts,
-		token,
-	})) as LoadedData;
+	const effective = await getEffectiveGithubToken();
+	let sessionRevoked = false;
+
+	let resolved: LoadedData;
+	try {
+		resolved = (await resolveImport(parsed, {
+			...resolveOpts,
+			token: effective.token,
+		})) as LoadedData;
+	} catch (err: any) {
+		// If the user's own OAuth access_token was rejected, their
+		// session is stale (they revoked the app on github.com, or the
+		// token has been invalidated some other way). Transparently
+		// retry with the anonymous-fallback env token so the page still
+		// renders, and signal to the caller that the session cookie
+		// should be cleared on the response.
+		if (err?.status === 401 && effective.source === 'session') {
+			console.warn(
+				'[load] OAuth session token rejected by GitHub (401). ' +
+					'Falling back to the anonymous env token for this ' +
+					'request and clearing the session cookie.'
+			);
+			sessionRevoked = true;
+			const fallbackToken = cleanToken(process.env.GITHUB_TOKEN);
+			resolved = (await resolveImport(parsed, {
+				...resolveOpts,
+				token: fallbackToken,
+			})) as LoadedData;
+		} else {
+			throw err;
+		}
+	}
+
 	resolved.asPath = pathname;
 	resolved.host =
 		headers.get('x-forwarded-host') ?? headers.get('host') ?? '';
@@ -89,5 +128,5 @@ export async function loadFromPath(
 		};
 	}
 
-	return { data: resolved, rawUrl };
+	return { data: resolved, rawUrl, sessionRevoked };
 }

@@ -1,10 +1,26 @@
 import { basename } from 'node:path';
 import { loadFromPath } from '../../../../lib/load';
+import { SESSION_COOKIE } from '../../../../lib/session';
 
 export const dynamic = 'force-dynamic';
 
 interface RouteContext {
 	params: Promise<{ slug?: string[] }>;
+}
+
+/**
+ * If the request's OAuth session token was rejected by GitHub during
+ * resolution, this function sets a `Set-Cookie` header on the response
+ * that clears the dead session cookie.
+ */
+function clearSessionCookie(req: Request, headers: Headers) {
+	const secure = new URL(req.url).protocol === 'https:';
+	headers.append(
+		'Set-Cookie',
+		`${SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax${
+			secure ? '; Secure' : ''
+		}`
+	);
 }
 
 export async function GET(req: Request, ctx: RouteContext) {
@@ -13,7 +29,7 @@ export async function GET(req: Request, ctx: RouteContext) {
 
 	// For raw responses we don't need the readme body, just the resolved
 	// `rawUrl` so we can proxy the file directly.
-	const { rawUrl, data } = await loadFromPath(
+	const { rawUrl, data, sessionRevoked } = await loadFromPath(
 		pathname,
 		new Headers(req.headers),
 		{ includeContent: false }
@@ -32,14 +48,15 @@ export async function GET(req: Request, ctx: RouteContext) {
 		// around.
 		const likelyPrivate = !data.foundRepo || !data.foundCommit;
 		if (likelyPrivate) {
-			return new Response(null, {
-				status: 307,
-				headers: { Location: res.url },
-			});
+			const h = new Headers({ Location: res.url });
+			if (sessionRevoked) clearSessionCookie(req, h);
+			return new Response(null, { status: 307, headers: h });
 		}
+		const h = new Headers({ 'Content-Type': 'text/plain; charset=utf8' });
+		if (sessionRevoked) clearSessionCookie(req, h);
 		return new Response(`Not found: ${pathname}\n`, {
 			status: 404,
-			headers: { 'Content-Type': 'text/plain; charset=utf8' },
+			headers: h,
 		});
 	}
 
@@ -56,6 +73,7 @@ export async function GET(req: Request, ctx: RouteContext) {
 	// User-Agent so a Mozilla request to `/foo` can't be served the raw
 	// script that a previous curl request warmed the cache with.
 	headers.set('Vary', 'User-Agent');
+	if (sessionRevoked) clearSessionCookie(req, headers);
 
 	return new Response(res.body, { status: res.status, headers });
 }

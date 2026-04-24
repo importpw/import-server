@@ -98,7 +98,19 @@ export default async function Page({ params }: PageProps) {
 
 	const h = await headers();
 	const session = await getSession();
-	const { data } = await loadFromPath(pathname, h);
+	const { data, sessionRevoked } = await loadFromPath(pathname, h);
+
+	// If the user's OAuth session token was rejected by GitHub (they
+	// revoked the app's permission), redirect through /api/auth/logout
+	// to clear the now-useless session cookie. The page renders with
+	// the anonymous-fallback token on the next request.
+	if (sessionRevoked) {
+		redirect(
+			`/api/auth/logout?return_to=${encodeURIComponent(
+				pathname
+			)}&reason=revoked`
+		);
+	}
 
 	const {
 		org,

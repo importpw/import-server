@@ -204,7 +204,13 @@ export default async function resolveImport(
 		tree = cached.tree.data;
 	} catch (err: any) {
 		const status = err?.status;
-		if (status === 403 && /rate limit/i.test(err?.message ?? '')) {
+		if (status === 401) {
+			// 401 Bad credentials — the token is invalid, expired, or had
+			// its OAuth authorization revoked on github.com. Re-throw so
+			// the caller (lib/load.ts) can retry without this token and
+			// clear the session cookie if it was an OAuth session token.
+			throw err;
+		} else if (status === 403 && /rate limit/i.test(err?.message ?? '')) {
 			// Rate-limit errors (403) are noisy during local dev without
 			// a token — log at `warn` level with a friendly hint instead
 			// of `error`, which Next's dev overlay would surface.
@@ -214,19 +220,6 @@ export default async function resolveImport(
 						? '. Set GITHUB_TOKEN in .env.local to raise the limit to 5000/hour.'
 						: '.'
 				}`
-			);
-		} else if (status === 401) {
-			// 401 Bad credentials: either the env-fallback token is
-			// invalid / expired / has a stray newline, or the caller's
-			// OAuth access_token has been revoked by the user on GitHub.
-			// Log enough to tell which one (without leaking the token
-			// itself) so prod incidents are diagnosable from the logs.
-			console.error(
-				`[resolve] GitHub rejected the credential for ${org}/${repo} ` +
-					`(tokenFingerprint=${tokenFingerprint(token)}, ` +
-					`tokenLen=${token?.length ?? 0}). ` +
-					'Check that GITHUB_TOKEN has no trailing whitespace and ' +
-					'that the token is still valid at https://github.com/settings/tokens.'
 			);
 		} else if (status !== 404) {
 			// 404 is "repo doesn't exist / isn't visible to this token" —
