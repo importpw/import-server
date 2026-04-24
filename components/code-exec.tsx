@@ -8,21 +8,22 @@ export default function CodeExec({ code }: { code: string }) {
 
 	// React 19 + Strict Mode runs effects twice on mount (once for real,
 	// once for the "development-only simulated unmount/remount" pair).
-	// A plain `let cancelled` + cleanup doesn't help us here because the
-	// initial synchronous `write("$ Running...")` has already landed in
-	// state by the time the cleanup runs, and the re-mounted effect then
-	// prints a *second* "$ Running..." above its own request.
+	// A plain `let cancelled = false` + cleanup doesn't help us here
+	// because the initial synchronous `write("$ Running...")` has already
+	// landed in state by the time the cleanup runs — so the remounted
+	// effect ends up writing a *second* "Running..." above its own fetch.
 	//
-	// Guard with a ref that we never reset across the StrictMode pair so
-	// the fetch is kicked off exactly once regardless of how many times
-	// the effect fires.
+	// Guard with a ref flag that survives the StrictMode pair so the
+	// fetch is kicked off exactly once. We intentionally do NOT cancel
+	// the request on cleanup: the fetch is short-lived and the only
+	// downside of setting state on an unmounted tree is a dev warning,
+	// which is preferable to ending up with no output in the popup.
 	const started = useRef(false);
 
 	useEffect(() => {
 		if (started.current) return;
 		started.current = true;
 
-		let cancelled = false;
 		const write = (d: string) =>
 			setData((current) => current + d);
 
@@ -36,7 +37,6 @@ export default function CodeExec({ code }: { code: string }) {
 				body: code,
 			});
 			const body = await res.text();
-			if (cancelled) return;
 			write(body.replace(/\n/g, '\r\n'));
 
 			const exitCode = parseInt(
@@ -49,10 +49,6 @@ export default function CodeExec({ code }: { code: string }) {
 				);
 			}
 		})();
-
-		return () => {
-			cancelled = true;
-		};
 	}, [code]);
 
 	return (
