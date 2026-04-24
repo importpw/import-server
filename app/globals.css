@@ -157,6 +157,16 @@ img {
 	color: var(--color-muted-foreground);
 }
 
+/* react-inspector nests its tree in <ol><li> elements. Kill the
+ * dash marker we add to markdown list items for anything inside the
+ * inspector so the data dump doesn't show stray `-` between entries.
+ */
+.no-docs-inspector li::before,
+.markdown-body .no-docs-inspector li::before {
+	content: none;
+	margin-right: 0;
+}
+
 .markdown-body li code,
 .markdown-body p code {
 	font-family: var(--font-mono);

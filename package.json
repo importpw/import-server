@@ -31,7 +31,7 @@
 		"radix-ui": "^1.4.3",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
-		"react-inspector": "^6.0.2",
+		"react-inspector": "^9.0.0",
 		"react-new-window": "^1.0.1",
 		"shadcn": "^4.4.0",
 		"shiki": "^4.0.2",

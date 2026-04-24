@@ -158,7 +158,7 @@ export default function NoDocs(props: NoDocsProps) {
 			<div className="why">{reasons}</div>
 
 			<h2>Data</h2>
-			<div className="[&_li]:before:content-none">
+			<div className="no-docs-inspector">
 				<ObjectInspectorClient data={props} />
 			</div>
 		</div>
