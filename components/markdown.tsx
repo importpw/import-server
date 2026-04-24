@@ -100,6 +100,21 @@ function Code({
 	return block;
 }
 
+/**
+ * Pass-through block splitter: feed the whole markdown string through
+ * as a single block. Streamdown's default splitter chunks input at
+ * block boundaries (so it can stream partial markdown token-by-token
+ * from an LLM), but each chunk is then parsed by remark in isolation.
+ * That breaks CommonMark features that span blocks — most notably
+ * reference-style links like `[tootallnate/hello][hello]` where the
+ * `[hello]: https://…` definition lives further down in the document
+ * and would end up in a separate chunk.
+ *
+ * Our content is always a fully-loaded GitHub README, not a streaming
+ * LLM response, so there's no benefit to chunked parsing here.
+ */
+const parseAsSingleBlock = (markdown: string) => [markdown];
+
 export default function MarkdownClient({
 	body,
 	org,
@@ -109,6 +124,8 @@ export default function MarkdownClient({
 	return (
 		<Streamdown
 			plugins={{ code }}
+			mode="static"
+			parseMarkdownIntoBlocksFn={parseAsSingleBlock}
 			components={{
 				a: (props: any) => (
 					<MarkdownLink
